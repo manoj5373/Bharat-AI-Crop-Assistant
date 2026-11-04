@@ -70,7 +70,9 @@ private data class AppStrings(
     val scannerTitle: String,
     val scannerDescription: String,
     val openCamera: String,
-    val uploadImage: String
+    val uploadImage: String,
+    val retakeImage: String,
+    val changeImage: String
 )
 
 private fun translationsFor(language: String): AppStrings {
@@ -108,7 +110,9 @@ private fun translationsFor(language: String): AppStrings {
             scannerTitle = "फसल स्कैनर",
             scannerDescription = "फसल का स्वास्थ्य जांचने के लिए उसकी तस्वीर लें या अपलोड करें।",
             openCamera = "कैमरा खोलें",
-            uploadImage = "तस्वीर अपलोड करें"
+            uploadImage = "तस्वीर अपलोड करें",
+            retakeImage = "दोबारा तस्वीर लें",
+            changeImage = "तस्वीर बदलें"
         )
 
         "Kannada" -> AppStrings(
@@ -144,7 +148,9 @@ private fun translationsFor(language: String): AppStrings {
             scannerTitle = "ಬೆಳೆ ಸ್ಕ್ಯಾನರ್",
             scannerDescription = "ಬೆಳೆಯ ಆರೋಗ್ಯವನ್ನು ಪರಿಶೀಲಿಸಲು ಅದರ ಚಿತ್ರವನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ ಅಥವಾ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.",
             openCamera = "ಕ್ಯಾಮೆರಾ ತೆರೆಯಿರಿ",
-            uploadImage = "ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ"
+            uploadImage = "ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+            retakeImage = "ಮತ್ತೆ ಚಿತ್ರ ತೆಗೆಯಿರಿ",
+            changeImage = "ಚಿತ್ರ ಬದಲಾಯಿಸಿ"
         )
 
         "Telugu" -> AppStrings(
@@ -180,7 +186,9 @@ private fun translationsFor(language: String): AppStrings {
             scannerTitle = "పంట స్కానర్",
             scannerDescription = "పంట ఆరోగ్యాన్ని తనిఖీ చేయడానికి చిత్రాన్ని తీయండి లేదా అప్‌లోడ్ చేయండి.",
             openCamera = "కెమెరాను తెరవండి",
-            uploadImage = "చిత్రాన్ని అప్‌లోడ్ చేయండి"
+            uploadImage = "చిత్రాన్ని అప్‌లోడ్ చేయండి",
+            retakeImage = "మళ్లీ ఫోటో తీయండి",
+            changeImage = "చిత్రాన్ని మార్చండి"
         )
 
         else -> AppStrings(
@@ -216,7 +224,9 @@ private fun translationsFor(language: String): AppStrings {
             scannerTitle = "Crop Scanner",
             scannerDescription = "Capture or upload a crop image to check its health.",
             openCamera = "Open Camera",
-            uploadImage = "Upload Image"
+            uploadImage = "Upload Image",
+            retakeImage = "Retake",
+            changeImage = "Change Image"
         )
     }
 }
@@ -701,6 +711,35 @@ private fun CropScannerScreen(
             )
         }
 
+        selectedImage?.let {
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+
+                OutlinedButton(
+                    onClick = {
+                        cameraLauncher.launch(null)
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("📷 ${strings.retakeImage}")
+                }
+
+                OutlinedButton(
+                    onClick = {
+                        galleryLauncher.launch("image/*")
+                    },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("🖼️ ${strings.changeImage}")
+                }
+            }
+        }
+
         Text(
             text = "🌿",
             fontSize = 55.sp
@@ -709,7 +748,7 @@ private fun CropScannerScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "strings.scannerTitle",
+            text = strings.scannerTitle,
             fontSize = 25.sp,
             fontWeight = FontWeight.Bold,
             color = Green
@@ -718,7 +757,7 @@ private fun CropScannerScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "strings.scannerDescription",
+            text = strings.scannerDescription,
             fontSize = 14.sp,
             color = GreyText
         )
