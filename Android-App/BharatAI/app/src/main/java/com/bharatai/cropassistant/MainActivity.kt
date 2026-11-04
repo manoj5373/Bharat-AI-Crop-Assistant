@@ -72,7 +72,9 @@ private data class AppStrings(
     val openCamera: String,
     val uploadImage: String,
     val retakeImage: String,
-    val changeImage: String
+    val changeImage: String,
+    val analyzeCrop: String,
+    val selectImageFirst: String
 )
 
 private fun translationsFor(language: String): AppStrings {
@@ -112,7 +114,9 @@ private fun translationsFor(language: String): AppStrings {
             openCamera = "कैमरा खोलें",
             uploadImage = "तस्वीर अपलोड करें",
             retakeImage = "दोबारा तस्वीर लें",
-            changeImage = "तस्वीर बदलें"
+            changeImage = "तस्वीर बदलें",
+            analyzeCrop = "फसल का विश्लेषण करें",
+            selectImageFirst = "कृपया पहले फसल की तस्वीर चुनें।"
         )
 
         "Kannada" -> AppStrings(
@@ -150,7 +154,9 @@ private fun translationsFor(language: String): AppStrings {
             openCamera = "ಕ್ಯಾಮೆರಾ ತೆರೆಯಿರಿ",
             uploadImage = "ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
             retakeImage = "ಮತ್ತೆ ಚಿತ್ರ ತೆಗೆಯಿರಿ",
-            changeImage = "ಚಿತ್ರ ಬದಲಾಯಿಸಿ"
+            changeImage = "ಚಿತ್ರ ಬದಲಾಯಿಸಿ",
+            analyzeCrop = "ಬೆಳೆಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ",
+            selectImageFirst = "ದಯವಿಟ್ಟು ಮೊದಲು ಬೆಳೆಯ ಚಿತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ."
         )
 
         "Telugu" -> AppStrings(
@@ -188,7 +194,9 @@ private fun translationsFor(language: String): AppStrings {
             openCamera = "కెమెరాను తెరవండి",
             uploadImage = "చిత్రాన్ని అప్‌లోడ్ చేయండి",
             retakeImage = "మళ్లీ ఫోటో తీయండి",
-            changeImage = "చిత్రాన్ని మార్చండి"
+            changeImage = "చిత్రాన్ని మార్చండి",
+            analyzeCrop = "పంటను విశ్లేషించండి",
+            selectImageFirst = "దయచేసి ముందుగా పంట చిత్రాన్ని ఎంచుకోండి."
         )
 
         else -> AppStrings(
@@ -226,7 +234,9 @@ private fun translationsFor(language: String): AppStrings {
             openCamera = "Open Camera",
             uploadImage = "Upload Image",
             retakeImage = "Retake",
-            changeImage = "Change Image"
+            changeImage = "Change Image",
+            analyzeCrop = "Analyze Crop",
+            selectImageFirst = "Please select a crop image first."
         )
     }
 }
@@ -658,6 +668,9 @@ private fun CropScannerScreen(
     onBack: () -> Unit
 ){
     val context = LocalContext.current
+    var message by remember {
+        mutableStateOf("")
+    }
 
     var selectedImage by remember {
         mutableStateOf<Bitmap?>(null)
@@ -738,7 +751,29 @@ private fun CropScannerScreen(
                     Text("🖼️ ${strings.changeImage}")
                 }
             }
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = {
+                    if (selectedImage == null) {
+                        message = strings.selectImageFirst
+                    } else {
+                        message = "Image ready for analysis"
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Green
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "🔍 ${strings.analyzeCrop}",
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
+
 
         Text(
             text = "🌿",
