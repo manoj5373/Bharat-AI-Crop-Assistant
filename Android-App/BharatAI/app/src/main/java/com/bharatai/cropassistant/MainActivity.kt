@@ -19,6 +19,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.bharatai.cropassistant.ui.theme.BharatAITheme
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 
 // Application colours
 private val Green = Color(0xFF166534)
@@ -57,7 +65,12 @@ private data class AppStrings(
     val assistantSelected: String,
     val scanSelected: String,
     val historySelected: String,
-    val profileSelected: String
+    val profileSelected: String,
+    val backHome: String,
+    val scannerTitle: String,
+    val scannerDescription: String,
+    val openCamera: String,
+    val uploadImage: String
 )
 
 private fun translationsFor(language: String): AppStrings {
@@ -90,7 +103,12 @@ private fun translationsFor(language: String): AppStrings {
             assistantSelected = "AI कृषि सहायक चुना गया।",
             scanSelected = "फसल स्कैन चुना गया।",
             historySelected = "फसल जांच का इतिहास चुना गया।",
-            profileSelected = "प्रोफ़ाइल चुनी गई।"
+            profileSelected = "प्रोफ़ाइल चुनी गई।",
+            backHome = "होम पर वापस जाएं",
+            scannerTitle = "फसल स्कैनर",
+            scannerDescription = "फसल का स्वास्थ्य जांचने के लिए उसकी तस्वीर लें या अपलोड करें।",
+            openCamera = "कैमरा खोलें",
+            uploadImage = "तस्वीर अपलोड करें"
         )
 
         "Kannada" -> AppStrings(
@@ -121,7 +139,12 @@ private fun translationsFor(language: String): AppStrings {
             assistantSelected = "AI ಕೃಷಿ ಸಹಾಯಕವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.",
             scanSelected = "ಬೆಳೆ ಸ್ಕ್ಯಾನ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.",
             historySelected = "ಬೆಳೆ ರೋಗನಿರ್ಣಯದ ಇತಿಹಾಸವನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.",
-            profileSelected = "ಪ್ರೊಫೈಲ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ."
+            profileSelected = "ಪ್ರೊಫೈಲ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ.",
+            backHome = "ಮುಖಪುಟಕ್ಕೆ ಹಿಂತಿರುಗಿ",
+            scannerTitle = "ಬೆಳೆ ಸ್ಕ್ಯಾನರ್",
+            scannerDescription = "ಬೆಳೆಯ ಆರೋಗ್ಯವನ್ನು ಪರಿಶೀಲಿಸಲು ಅದರ ಚಿತ್ರವನ್ನು ತೆಗೆದುಕೊಳ್ಳಿ ಅಥವಾ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ.",
+            openCamera = "ಕ್ಯಾಮೆರಾ ತೆರೆಯಿರಿ",
+            uploadImage = "ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ"
         )
 
         "Telugu" -> AppStrings(
@@ -152,7 +175,12 @@ private fun translationsFor(language: String): AppStrings {
             assistantSelected = "AI వ్యవసాయ సహాయకుడు ఎంచుకోబడింది.",
             scanSelected = "పంట స్కాన్ ఎంచుకోబడింది.",
             historySelected = "పంట నిర్ధారణ చరిత్ర ఎంచుకోబడింది.",
-            profileSelected = "ప్రొఫైల్ ఎంచుకోబడింది."
+            profileSelected = "ప్రొఫైల్ ఎంచుకోబడింది.",
+            backHome = "హోమ్‌కు తిరిగి వెళ్లండి",
+            scannerTitle = "పంట స్కానర్",
+            scannerDescription = "పంట ఆరోగ్యాన్ని తనిఖీ చేయడానికి చిత్రాన్ని తీయండి లేదా అప్‌లోడ్ చేయండి.",
+            openCamera = "కెమెరాను తెరవండి",
+            uploadImage = "చిత్రాన్ని అప్‌లోడ్ చేయండి"
         )
 
         else -> AppStrings(
@@ -183,7 +211,12 @@ private fun translationsFor(language: String): AppStrings {
             assistantSelected = "AI Farming Assistant selected.",
             scanSelected = "Crop scanning selected.",
             historySelected = "Diagnosis history selected.",
-            profileSelected = "Profile selected."
+            profileSelected = "Profile selected.",
+            backHome = "Back to Home",
+            scannerTitle = "Crop Scanner",
+            scannerDescription = "Capture or upload a crop image to check its health.",
+            openCamera = "Open Camera",
+            uploadImage = "Upload Image"
         )
     }
 }
@@ -210,6 +243,16 @@ fun BharatAIHomeScreen() {
     var message by remember { mutableStateOf("") }
 
     val strings = translationsFor(selectedLanguage)
+
+    if (selectedTab == "Scan") {
+        CropScannerScreen(
+            strings = strings,
+            onBack = {
+                selectedTab = "Home"
+            }
+        )
+        return
+    }
 
     val languageDisplayName = when (selectedLanguage) {
         "Hindi" -> "हिन्दी"
@@ -348,7 +391,8 @@ fun BharatAIHomeScreen() {
 
                     Button(
                         onClick = {
-                            message = strings.scanComingSoon
+                            selectedTab = "Scan"
+                            message = ""
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
@@ -498,7 +542,7 @@ fun BharatAIHomeScreen() {
                 selected = selectedTab == "Scan"
             ) {
                 selectedTab = "Scan"
-                message = strings.scanSelected
+                message = ""
             }
 
             NavigationItem(
@@ -596,5 +640,102 @@ fun NavigationItem(
             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
             color = if (selected) Green else GreyText
         )
+    }
+}
+@Composable
+private fun CropScannerScreen(
+    strings: AppStrings,
+    onBack: () -> Unit
+){
+    val context = LocalContext.current
+
+    var selectedImage by remember {
+        mutableStateOf<Bitmap?>(null)
+    }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            context.contentResolver.openInputStream(it)?.use { stream ->
+                selectedImage = BitmapFactory.decodeStream(stream)
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
+            .padding(20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextButton(onClick = onBack) {
+                Text("← ${strings.backHome}", color = Green)
+            }
+        }
+
+        selectedImage?.let { bitmap ->
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = "Selected crop image",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        Text(
+            text = "🌿",
+            fontSize = 55.sp
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "strings.scannerTitle",
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            color = Green
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "strings.scannerDescription",
+            fontSize = 14.sp,
+            color = GreyText
+        )
+
+        Spacer(modifier = Modifier.height(25.dp))
+
+        Button(
+            onClick = { },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Green
+            )
+        ) {
+            Text("📷  ${strings.openCamera}")
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = {
+                galleryLauncher.launch("image/*")
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("🖼️  ${strings.uploadImage}")
+        }
     }
 }
