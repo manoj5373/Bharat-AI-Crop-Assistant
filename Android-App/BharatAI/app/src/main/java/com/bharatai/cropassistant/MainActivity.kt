@@ -663,6 +663,14 @@ private fun CropScannerScreen(
         }
     }
 
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            selectedImage = bitmap
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -718,7 +726,7 @@ private fun CropScannerScreen(
         Spacer(modifier = Modifier.height(25.dp))
 
         Button(
-            onClick = { },
+            onClick = {cameraLauncher.launch(null) },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Green
