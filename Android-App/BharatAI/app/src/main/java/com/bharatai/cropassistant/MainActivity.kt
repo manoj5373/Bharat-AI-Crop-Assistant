@@ -341,7 +341,12 @@ fun BharatAIHomeScreen() {
     if (selectedTab == "Scan") {
         CropScannerScreen(
             strings = strings,
+            selectedImage = selectedCropImage,
+            onImageChange = { image ->
+                selectedCropImage = image
+            },
             onBack = {
+                selectedCropImage = null
                 selectedTab = "Home"
             },
             onAnalyze = { image ->
@@ -892,24 +897,19 @@ fun NavigationItem(
 @Composable
 private fun CropScannerScreen(
     strings: AppStrings,
+    selectedImage: Bitmap?,
+    onImageChange: (Bitmap?) -> Unit,
     onBack: () -> Unit,
     onAnalyze: (Bitmap) -> Unit
 ) {
     val context = LocalContext.current
-    var message by remember {
-        mutableStateOf("")
-    }
-
-    var selectedImage by remember {
-        mutableStateOf<Bitmap?>(null)
-    }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
             context.contentResolver.openInputStream(it)?.use { stream ->
-                selectedImage = BitmapFactory.decodeStream(stream)
+                onImageChange(BitmapFactory.decodeStream(stream))
             }
         }
     }
@@ -918,7 +918,7 @@ private fun CropScannerScreen(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
         if (bitmap != null) {
-            selectedImage = bitmap
+            onImageChange(bitmap)
         }
     }
 
@@ -952,7 +952,7 @@ private fun CropScannerScreen(
             )
         }
 
-        selectedImage?.let {
+        selectedImage?.let { bitmap ->
 
             Spacer(modifier = Modifier.height(12.dp))
 
@@ -983,11 +983,7 @@ private fun CropScannerScreen(
 
             Button(
                 onClick = {
-                    if (selectedImage == null) {
-                        message = strings.selectImageFirst
-                    } else {
-                        onAnalyze(selectedImage!!)
-                    }
+                    onAnalyze(bitmap)
                 },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
