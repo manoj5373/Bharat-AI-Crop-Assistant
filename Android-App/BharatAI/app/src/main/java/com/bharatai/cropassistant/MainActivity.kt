@@ -74,7 +74,20 @@ private data class AppStrings(
     val retakeImage: String,
     val changeImage: String,
     val analyzeCrop: String,
-    val selectImageFirst: String
+    val selectImageFirst: String,
+
+// Diagnosis Results translations
+    val diagnosisResultsTitle: String,
+    val sampleDiagnosis: String,
+    val diseaseLabel: String,
+    val leafSpot: String,
+    val severityLabel: String,
+    val moderate: String,
+    val confidenceLabel: String,
+    val sampleValueOnly: String,
+    val sampleDisclaimer: String,
+    val backToScanner: String
+
 )
 
 private fun translationsFor(language: String): AppStrings {
@@ -116,7 +129,18 @@ private fun translationsFor(language: String): AppStrings {
             retakeImage = "दोबारा तस्वीर लें",
             changeImage = "तस्वीर बदलें",
             analyzeCrop = "फसल का विश्लेषण करें",
-            selectImageFirst = "कृपया पहले फसल की तस्वीर चुनें।"
+            selectImageFirst = "कृपया पहले फसल की तस्वीर चुनें।",
+
+            diagnosisResultsTitle = "निदान परिणाम",
+            sampleDiagnosis = "नमूना निदान",
+            diseaseLabel = "रोग:",
+            leafSpot = "पत्ती का धब्बा रोग",
+            severityLabel = "गंभीरता:",
+            moderate = "मध्यम",
+            confidenceLabel = "विश्वास स्तर:",
+            sampleValueOnly = "केवल नमूना मान",
+            sampleDisclaimer = "यह केवल प्रदर्शन के लिए नमूना डेटा है, वास्तविक AI निदान नहीं। प्रशिक्षित AI मॉडल के एकीकरण के बाद रोग की पहचान उपलब्ध होगी।",
+            backToScanner = "स्कैनर पर वापस जाएं"
         )
 
         "Kannada" -> AppStrings(
@@ -154,9 +178,19 @@ private fun translationsFor(language: String): AppStrings {
             openCamera = "ಕ್ಯಾಮೆರಾ ತೆರೆಯಿರಿ",
             uploadImage = "ಚಿತ್ರವನ್ನು ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
             retakeImage = "ಮತ್ತೆ ಚಿತ್ರ ತೆಗೆಯಿರಿ",
-            changeImage = "ಚಿತ್ರ ಬದಲಾಯಿಸಿ",
-            analyzeCrop = "ಬೆಳೆಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ",
-            selectImageFirst = "ದಯವಿಟ್ಟು ಮೊದಲು ಬೆಳೆಯ ಚಿತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ."
+            changeImage = "ಚಿತ್ರ ಬದಲಾಯಿಸಿ",analyzeCrop = "ಬೆಳೆಯನ್ನು ವಿಶ್ಲೇಷಿಸಿ",
+            selectImageFirst = "ದಯವಿಟ್ಟು ಮೊದಲು ಬೆಳೆಯ ಚಿತ್ರವನ್ನು ಆಯ್ಕೆಮಾಡಿ.",
+
+            diagnosisResultsTitle = "ರೋಗನಿರ್ಣಯದ ಫಲಿತಾಂಶಗಳು",
+            sampleDiagnosis = "ಮಾದರಿ ರೋಗನಿರ್ಣಯ",
+            diseaseLabel = "ರೋಗ:",
+            leafSpot = "ಎಲೆ ಚುಕ್ಕೆ ರೋಗ",
+            severityLabel = "ತೀವ್ರತೆ:",
+            moderate = "ಮಧ್ಯಮ",
+            confidenceLabel = "ವಿಶ್ವಾಸದ ಮಟ್ಟ:",
+            sampleValueOnly = "ಮಾದರಿ ಮೌಲ್ಯ ಮಾತ್ರ",
+            sampleDisclaimer = "ಇದು ಪ್ರದರ್ಶನಕ್ಕಾಗಿ ಮಾತ್ರ ನೀಡಲಾದ ಮಾದರಿ ಮಾಹಿತಿ, ನಿಜವಾದ AI ರೋಗನಿರ್ಣಯವಲ್ಲ. ತರಬೇತಿ ಪಡೆದ AI ಮಾದರಿಯನ್ನು ಸಂಯೋಜಿಸಿದ ನಂತರ ರೋಗ ಪತ್ತೆ ಲಭ್ಯವಾಗುತ್ತದೆ.",
+            backToScanner = "ಸ್ಕ್ಯಾನರ್‌ಗೆ ಹಿಂತಿರುಗಿ"
         )
 
         "Telugu" -> AppStrings(
@@ -196,7 +230,18 @@ private fun translationsFor(language: String): AppStrings {
             retakeImage = "మళ్లీ ఫోటో తీయండి",
             changeImage = "చిత్రాన్ని మార్చండి",
             analyzeCrop = "పంటను విశ్లేషించండి",
-            selectImageFirst = "దయచేసి ముందుగా పంట చిత్రాన్ని ఎంచుకోండి."
+            selectImageFirst = "దయచేసి ముందుగా పంట చిత్రాన్ని ఎంచుకోండి.",
+
+            diagnosisResultsTitle = "వ్యాధి నిర్ధారణ ఫలితాలు",
+            sampleDiagnosis = "నమూనా వ్యాధి నిర్ధారణ",
+            diseaseLabel = "వ్యాధి:",
+            leafSpot = "ఆకు మచ్చ వ్యాధి",
+            severityLabel = "తీవ్రత:",
+            moderate = "మధ్యస్థం",
+            confidenceLabel = "నమ్మక స్థాయి:",
+            sampleValueOnly = "నమూనా విలువ మాత్రమే",
+            sampleDisclaimer = "ఇది ప్రదర్శన కోసం మాత్రమే ఇచ్చిన నమూనా సమాచారం, నిజమైన AI నిర్ధారణ కాదు. శిక్షణ పొందిన AI మోడల్‌ను అనుసంధానించిన తర్వాత వ్యాధి గుర్తింపు అందుబాటులో ఉంటుంది.",
+            backToScanner = "స్కానర్‌కు తిరిగి వెళ్లండి"
         )
 
         else -> AppStrings(
@@ -236,7 +281,18 @@ private fun translationsFor(language: String): AppStrings {
             retakeImage = "Retake",
             changeImage = "Change Image",
             analyzeCrop = "Analyze Crop",
-            selectImageFirst = "Please select a crop image first."
+            selectImageFirst = "Please select a crop image first.",
+
+            diagnosisResultsTitle = "Diagnosis Results",
+            sampleDiagnosis = "Sample Diagnosis",
+            diseaseLabel = "Disease:",
+            leafSpot = "Leaf Spot",
+            severityLabel = "Severity:",
+            moderate = "Moderate",
+            confidenceLabel = "Confidence:",
+            sampleValueOnly = "Sample value only",
+            sampleDisclaimer = "This is sample data for demonstration only, not an actual AI diagnosis. Disease detection will become available after integration of the trained AI model.",
+            backToScanner = "Back to Scanner"
         )
     }
 }
@@ -261,14 +317,36 @@ fun BharatAIHomeScreen() {
     var languageMenu by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf("Home") }
     var message by remember { mutableStateOf("") }
+    var selectedCropImage by remember { mutableStateOf<Bitmap?>(null) }
 
     val strings = translationsFor(selectedLanguage)
+
+    if (selectedTab == "Results") {
+        selectedCropImage?.let { image ->
+            DiagnosisResultsScreen(
+                image = image,
+                strings = strings,
+                selectedLanguage = selectedLanguage,
+                onLanguageChange = { language ->
+                    selectedLanguage = language
+                },
+                onBack = {
+                    selectedTab = "Scan"
+                }
+            )
+        }
+        return
+    }
 
     if (selectedTab == "Scan") {
         CropScannerScreen(
             strings = strings,
             onBack = {
                 selectedTab = "Home"
+            },
+            onAnalyze = { image ->
+                selectedCropImage = image
+                selectedTab = "Results"
             }
         )
         return
@@ -595,6 +673,155 @@ fun BharatAIHomeScreen() {
     }
 }
 
+
+@Composable
+private fun DiagnosisResultsScreen(
+    image: Bitmap,
+    strings: AppStrings,
+    selectedLanguage: String,
+    onLanguageChange: (String) -> Unit,
+    onBack: () -> Unit
+) {
+    var languageMenu by remember { mutableStateOf(false) }
+
+    val languageDisplayName = when (selectedLanguage) {
+        "Hindi" -> "हिन्दी"
+        "Kannada" -> "ಕನ್ನಡ"
+        "Telugu" -> "తెలుగు"
+        else -> "English"
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp)
+    ) {
+
+        // Back button and language selector
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            TextButton(onClick = onBack) {
+                Text(
+                    text = "← ${strings.backToScanner}",
+                    color = Green
+                )
+            }
+
+            Box {
+                OutlinedButton(
+                    onClick = { languageMenu = true }
+                ) {
+                    Text("🌐 $languageDisplayName")
+                }
+
+                DropdownMenu(
+                    expanded = languageMenu,
+                    onDismissRequest = { languageMenu = false }
+                ) {
+                    listOf("English", "Hindi", "Kannada", "Telugu")
+                        .forEach { language ->
+
+                            val displayName = when (language) {
+                                "Hindi" -> "हिन्दी"
+                                "Kannada" -> "ಕನ್ನಡ"
+                                "Telugu" -> "తెలుగు"
+                                else -> "English"
+                            }
+
+                            DropdownMenuItem(
+                                text = { Text(displayName) },
+                                onClick = {
+                                    onLanguageChange(language)
+                                    languageMenu = false
+                                }
+                            )
+                        }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Results heading
+        Text(
+            text = strings.diagnosisResultsTitle,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            color = Green
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Selected crop image
+        Image(
+            bitmap = image.asImageBitmap(),
+            contentDescription = "Selected crop image",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(230.dp),
+            contentScale = ContentScale.Crop
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Sample diagnosis card
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp)
+            ) {
+                Text(
+                    text = strings.sampleDiagnosis,
+                    fontSize = 19.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Green
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "${strings.diseaseLabel} ${strings.leafSpot}",
+                    fontWeight = FontWeight.Medium,
+                    color = DarkText
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "${strings.severityLabel} ${strings.moderate}",
+                    color = DarkText
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = "${strings.confidenceLabel} ${strings.sampleValueOnly}",
+                    color = DarkText
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = strings.sampleDisclaimer,
+                    fontSize = 13.sp,
+                    color = GreyText
+                )
+            }
+        }
+    }
+}
+
+
 // Reusable Feature Card
 @Composable
 fun FeatureCard(
@@ -665,8 +892,9 @@ fun NavigationItem(
 @Composable
 private fun CropScannerScreen(
     strings: AppStrings,
-    onBack: () -> Unit
-){
+    onBack: () -> Unit,
+    onAnalyze: (Bitmap) -> Unit
+) {
     val context = LocalContext.current
     var message by remember {
         mutableStateOf("")
@@ -758,7 +986,7 @@ private fun CropScannerScreen(
                     if (selectedImage == null) {
                         message = strings.selectImageFirst
                     } else {
-                        message = "Image ready for analysis"
+                        onAnalyze(selectedImage!!)
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
