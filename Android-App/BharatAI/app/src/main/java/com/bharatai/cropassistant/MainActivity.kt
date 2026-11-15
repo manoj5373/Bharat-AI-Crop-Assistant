@@ -1,5 +1,7 @@
 package com.bharatai.cropassistant
 
+import androidx.exifinterface.media.ExifInterface
+import android.graphics.Matrix
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -27,6 +29,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import android.net.Uri
+import java.io.File
+import androidx.core.content.FileProvider
 
 // Application colours
 private val Green = Color(0xFF166534)
@@ -914,12 +919,101 @@ private fun CropScannerScreen(
         }
     }
 
+    var cameraImageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+
     val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
-    ) { bitmap ->
-        if (bitmap != null) {
-            onImageChange(bitmap)
+        contract = ActivityResultContracts.TakePicture()
+    ) { success ->
+
+        if (success) {
+            cameraImageUri?.let { uri ->
+
+                val bitmap = context.contentResolver
+                    .openInputStream(uri)
+                    ?.use { stream ->
+                        BitmapFactory.decodeStream(stream)
+                    }
+
+                if (bitmap != null) {
+
+                    val orientation = context.contentResolver
+                        .openInputStream(uri)
+                        ?.use { stream ->
+                            ExifInterface(stream).getAttributeInt(
+                                ExifInterface.TAG_ORIENTATION,
+                                ExifInterface.ORIENTATION_NORMAL
+                            )
+                        } ?: ExifInterface.ORIENTATION_NORMAL
+
+                    val matrix = Matrix()
+
+                    when (orientation) {
+                        ExifInterface.ORIENTATION_ROTATE_90 ->
+                            matrix.postRotate(90f)
+
+                        ExifInterface.ORIENTATION_ROTATE_180 ->
+                            matrix.postRotate(180f)
+
+                        ExifInterface.ORIENTATION_ROTATE_270 ->
+                            matrix.postRotate(270f)
+
+                        ExifInterface.ORIENTATION_FLIP_HORIZONTAL ->
+                            matrix.preScale(-1f, 1f)
+
+                        ExifInterface.ORIENTATION_FLIP_VERTICAL ->
+                            matrix.preScale(1f, -1f)
+
+                        ExifInterface.ORIENTATION_TRANSPOSE -> {
+                            matrix.preScale(-1f, 1f)
+                            matrix.postRotate(270f)
+                        }
+
+                        ExifInterface.ORIENTATION_TRANSVERSE -> {
+                            matrix.preScale(-1f, 1f)
+                            matrix.postRotate(90f)
+                        }
+                    }
+
+                    val correctedBitmap = Bitmap.createBitmap(
+                        bitmap,
+                        0,
+                        0,
+                        bitmap.width,
+                        bitmap.height,
+                        matrix,
+                        true
+                    )
+
+                    onImageChange(correctedBitmap)
+                }
+            }
         }
+    }
+
+    val launchCamera = {
+        val imageDirectory = File(context.cacheDir, "crop_images")
+
+        if (!imageDirectory.exists()) {
+            imageDirectory.mkdirs()
+        }
+
+        val imageFile = File.createTempFile(
+            "crop_",
+            ".jpg",
+            imageDirectory
+        )
+
+        val imageUri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.fileprovider",
+            imageFile
+        )
+
+        cameraImageUri = imageUri
+
+        cameraLauncher.launch(imageUri)
     }
 
     Column(
@@ -963,7 +1057,7 @@ private fun CropScannerScreen(
 
                 OutlinedButton(
                     onClick = {
-                        cameraLauncher.launch(null)
+                        launchCamera()
                     },
                     modifier = Modifier.weight(1f)
                 ) {
@@ -1024,7 +1118,7 @@ private fun CropScannerScreen(
         Spacer(modifier = Modifier.height(25.dp))
 
         Button(
-            onClick = {cameraLauncher.launch(null) },
+            onClick = { launchCamera() },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Green
