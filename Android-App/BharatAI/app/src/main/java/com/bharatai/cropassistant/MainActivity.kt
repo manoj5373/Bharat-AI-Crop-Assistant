@@ -32,6 +32,9 @@ import androidx.compose.ui.platform.LocalContext
 import android.net.Uri
 import java.io.File
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 // Application colours
 private val Green = Color(0xFF166534)
@@ -324,6 +327,25 @@ fun BharatAIHomeScreen() {
     var message by remember { mutableStateOf("") }
     var selectedCropImage by remember { mutableStateOf<Bitmap?>(null) }
 
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
+    var classifier by remember {
+        mutableStateOf<MulberryClassifier?>(null)
+    }
+
+    var prediction by remember {
+        mutableStateOf<MulberryPrediction?>(null)
+    }
+
+    var isAnalyzing by remember {
+        mutableStateOf(false)
+    }
+
+    var analysisError by remember {
+        mutableStateOf<String?>(null)
+    }
+
     val strings = translationsFor(selectedLanguage)
 
     if (selectedTab == "Results") {
@@ -332,6 +354,9 @@ fun BharatAIHomeScreen() {
                 image = image,
                 strings = strings,
                 selectedLanguage = selectedLanguage,
+                prediction = prediction,
+                isAnalyzing = isAnalyzing,
+                analysisError = analysisError,
                 onLanguageChange = { language ->
                     selectedLanguage = language
                 },
@@ -356,7 +381,31 @@ fun BharatAIHomeScreen() {
             },
             onAnalyze = { image ->
                 selectedCropImage = image
-                selectedTab = "Results"
+                isAnalyzing = true
+                analysisError = null
+                prediction = null
+
+                val existingClassifier = classifier
+
+                scope.launch {
+                    try {
+                        val (loadedClassifier, result) = withContext(Dispatchers.Default) {
+                            val activeClassifier =
+                                existingClassifier ?: MulberryClassifier(context)
+
+                            activeClassifier to activeClassifier.predict(image)
+                        }
+
+                        classifier = loadedClassifier
+                        prediction = result
+                        selectedTab = "Results"
+
+                    } catch (e: Exception) {
+                        analysisError = e.localizedMessage ?: "Unable to analyze this image."
+                    } finally {
+                        isAnalyzing = false
+                    }
+                }
             }
         )
         return
@@ -690,6 +739,9 @@ private fun DiagnosisResultsScreen(
     strings: AppStrings,
     selectedLanguage: String,
     onLanguageChange: (String) -> Unit,
+    prediction: MulberryPrediction?,
+    isAnalyzing: Boolean,
+    analysisError: String?,
     onBack: () -> Unit
 ) {
     var languageMenu by remember { mutableStateOf(false) }
@@ -791,7 +843,7 @@ private fun DiagnosisResultsScreen(
                 modifier = Modifier.padding(18.dp)
             ) {
                 Text(
-                    text = strings.sampleDiagnosis,
+                    text = strings.diagnosisResultsTitle,
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,
                     color = Green
@@ -799,33 +851,51 @@ private fun DiagnosisResultsScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    text = "${strings.diseaseLabel} ${strings.leafSpot}",
-                    fontWeight = FontWeight.Medium,
-                    color = DarkText
-                )
+                when {
+                    isAnalyzing -> {
+                        CircularProgressIndicator(color = Green)
+                        Text("Analyzing leaf image...")
+                    }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    analysisError != null -> {
+                        Text(
+                            text = "Analysis failed: $analysisError",
+                            color = Color.Red
+                        )
+                    }
 
-                Text(
-                    text = "${strings.severityLabel} ${strings.moderate}",
-                    color = DarkText
-                )
+                    prediction != null -> {
+                        Text(
+                            text = "${strings.diseaseLabel} ${prediction.diseaseName}",
+                            fontWeight = FontWeight.Bold,
+                            color = DarkText
+                        )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = "${strings.confidenceLabel} ${strings.sampleValueOnly}",
-                    color = DarkText
-                )
+                        Text(
+                            text = "${strings.confidenceLabel} ${
+                                "%.2f".format(
+                                    java.util.Locale.US,
+                                    prediction.confidence * 100
+                                )
+                            }%",
+                            color = DarkText
+                        )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    text = strings.sampleDisclaimer,
-                    fontSize = 13.sp,
-                    color = GreyText
-                )
+                        Text(
+                            text = "AI model result. Please confirm with a crop expert.",
+                            fontSize = 13.sp,
+                            color = GreyText
+                        )
+                    }
+
+                    else -> {
+                        Text("No prediction available.")
+                    }
+                }
             }
         }
     }
