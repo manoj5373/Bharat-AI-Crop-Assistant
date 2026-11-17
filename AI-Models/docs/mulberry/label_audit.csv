@@ -1,0 +1,9 @@
+image,original_label,model_prediction,expert_verified,corrected_label,notes
+IMG_1698.JPG,Disease Free leaves,Leaf Rust,,,
+IMG_20221216_141246.jpg,Leaf Rust,Disease Free leaves,,,
+IMG_20221216_144902.jpg,Leaf Rust,Leaf spot,,,
+IMG_1240.JPG,Leaf Rust,Leaf spot,,,
+IMG_20221216_152138.jpg,Leaf Rust,Leaf spot,,,
+s (2).JPG,Leaf Rust,Disease Free leaves,,,
+IMG_1326.JPG,Leaf Rust,Leaf spot,,,
+IMG_20221216_144816.jpg,Leaf spot,Leaf Rust,,,
