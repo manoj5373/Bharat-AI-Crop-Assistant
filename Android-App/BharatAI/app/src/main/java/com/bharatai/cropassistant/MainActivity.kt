@@ -1678,13 +1678,13 @@ fun ProfileScreen(
 
         // Header
         Text(
-            text = "strings.profileTitle",
+            text = strings.profileTitle,
             style = MaterialTheme.typography.headlineMedium,
             color = Green
         )
 
         Text(
-            text = "strings.profileDescription",
+            text = strings.profileDescription,
             color = GreyText,
             style = MaterialTheme.typography.bodyMedium
         )
@@ -1701,7 +1701,7 @@ fun ProfileScreen(
             Column(modifier = Modifier.padding(16.dp)) {
 
                 Text(
-                    text = "strings.personalInformation",
+                    text = strings.personalInformation,
                     style = MaterialTheme.typography.titleMedium,
                     color = Green
                 )
@@ -1711,7 +1711,7 @@ fun ProfileScreen(
                 OutlinedTextField(
                     value = farmerName,
                     onValueChange = onFarmerNameChange,
-                    label = { Text("strings.farmerNameLabel") },
+                    label = { Text(strings.farmerNameLabel) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = isEditing,
@@ -1737,7 +1737,7 @@ fun ProfileScreen(
                             onFarmerPhoneChange(input)
                         }
                     },
-                    label = { Text("strings.phoneNumberLabel") },
+                    label = { Text(strings.phoneNumberLabel) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = isEditing,
@@ -1778,7 +1778,7 @@ fun ProfileScreen(
             Column(modifier = Modifier.padding(16.dp)) {
 
                 Text(
-                    text = "strings.farmInformation",
+                    text = strings.farmInformation,
                     style = MaterialTheme.typography.titleMedium,
                     color = Green
                 )
@@ -1788,7 +1788,7 @@ fun ProfileScreen(
                 OutlinedTextField(
                     value = farmerVillage,
                     onValueChange = onFarmerVillageChange,
-                    label = { Text("strings.villageLabel") },
+                    label = { Text(strings.villageLabel) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = isEditing,
@@ -1810,7 +1810,7 @@ fun ProfileScreen(
                 OutlinedTextField(
                     value = farmerDistrict,
                     onValueChange = onFarmerDistrictChange,
-                    label = { Text("strings.districtLabel") },
+                    label = { Text(strings.districtLabel) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = isEditing,
@@ -1832,7 +1832,7 @@ fun ProfileScreen(
                 OutlinedTextField(
                     value = farmerState,
                     onValueChange = onFarmerStateChange,
-                    label = { Text("strings.stateLabel") },
+                    label = { Text(strings.stateLabel) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     enabled = isEditing,
@@ -1868,7 +1868,7 @@ fun ProfileScreen(
                     containerColor = Green
                 )
             ) {
-                Text("strings.saveProfile")
+                Text(strings.saveProfile)
             }
         } else {
             Button(
@@ -1878,7 +1878,7 @@ fun ProfileScreen(
                     containerColor = Green
                 )
             ) {
-                Text("strings.editProfile")
+                Text(strings.editProfile)
             }
         }
 
@@ -1888,7 +1888,7 @@ fun ProfileScreen(
             onClick = onBack,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Back to Home")
+            Text(strings.backHome)
         }
     }
 }
