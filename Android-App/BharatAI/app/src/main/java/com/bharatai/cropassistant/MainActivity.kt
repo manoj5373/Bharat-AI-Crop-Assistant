@@ -94,7 +94,21 @@ private data class AppStrings(
     val confidenceLabel: String,
     val sampleValueOnly: String,
     val sampleDisclaimer: String,
-    val backToScanner: String
+    val backToScanner: String,
+
+    // Treatment & Intervention translations
+    val treatmentTitle: String,
+    val treatmentButton: String,
+    val treatmentDescription: String,
+    val preventionTitle: String,
+    val backToResults: String,
+
+    val managementTitle: String,
+    val managementText: String,
+    val treatmentPreventionText: String,
+    val treatmentCaution: String,
+    val healthyResultTitle: String,
+    val healthyResultText: String
 
 )
 
@@ -148,7 +162,20 @@ private fun translationsFor(language: String): AppStrings {
             confidenceLabel = "विश्वास स्तर:",
             sampleValueOnly = "केवल नमूना मान",
             sampleDisclaimer = "यह केवल प्रदर्शन के लिए नमूना डेटा है, वास्तविक AI निदान नहीं। प्रशिक्षित AI मॉडल के एकीकरण के बाद रोग की पहचान उपलब्ध होगी।",
-            backToScanner = "स्कैनर पर वापस जाएं"
+            backToScanner = "स्कैनर पर वापस जाएं",
+
+            treatmentTitle = "उपचार और हस्तक्षेप",
+            treatmentButton = "उपचार और हस्तक्षेप देखें",
+            treatmentDescription = "रोग के अनुसार उपचार और फसल प्रबंधन मार्गदर्शन।",
+            preventionTitle = "रोकथाम के उपाय",
+            backToResults = "परिणामों पर वापस जाएं",
+
+            managementTitle = "प्रबंधन के उपाय",
+            managementText = "पहचाने गए रोग के अनुसार उचित प्रबंधन अपनाएं।",
+            treatmentPreventionText = "रोकथाम के उपाय",
+            treatmentCaution = "रेशम के कीड़ों को खिलाने के लिए उपयोग की जाने वाली पत्तियों पर कोई भी रसायन इस्तेमाल करने से पहले स्थानीय रेशम विशेषज्ञ से सलाह लें।",
+            healthyResultTitle = "पत्ती स्वस्थ दिखाई देती है",
+            healthyResultText = "फसल की नियमित निगरानी करें और उचित स्वच्छता बनाए रखें।"
         )
 
         "Kannada" -> AppStrings(
@@ -198,7 +225,20 @@ private fun translationsFor(language: String): AppStrings {
             confidenceLabel = "ವಿಶ್ವಾಸದ ಮಟ್ಟ:",
             sampleValueOnly = "ಮಾದರಿ ಮೌಲ್ಯ ಮಾತ್ರ",
             sampleDisclaimer = "ಇದು ಪ್ರದರ್ಶನಕ್ಕಾಗಿ ಮಾತ್ರ ನೀಡಲಾದ ಮಾದರಿ ಮಾಹಿತಿ, ನಿಜವಾದ AI ರೋಗನಿರ್ಣಯವಲ್ಲ. ತರಬೇತಿ ಪಡೆದ AI ಮಾದರಿಯನ್ನು ಸಂಯೋಜಿಸಿದ ನಂತರ ರೋಗ ಪತ್ತೆ ಲಭ್ಯವಾಗುತ್ತದೆ.",
-            backToScanner = "ಸ್ಕ್ಯಾನರ್‌ಗೆ ಹಿಂತಿರುಗಿ"
+            backToScanner = "ಸ್ಕ್ಯಾನರ್‌ಗೆ ಹಿಂತಿರುಗಿ",
+
+            treatmentTitle = "ಚಿಕಿತ್ಸೆ ಮತ್ತು ನಿರ್ವಹಣೆ",
+            treatmentButton = "ಚಿಕಿತ್ಸೆ ಮತ್ತು ನಿರ್ವಹಣೆ ನೋಡಿ",
+            treatmentDescription = "ರೋಗಕ್ಕೆ ಅನುಗುಣವಾದ ಚಿಕಿತ್ಸೆ ಮತ್ತು ಬೆಳೆ ನಿರ್ವಹಣೆಯ ಮಾರ್ಗದರ್ಶನ.",
+            preventionTitle = "ತಡೆಗಟ್ಟುವ ಕ್ರಮಗಳು",
+            backToResults = "ಫಲಿತಾಂಶಗಳಿಗೆ ಹಿಂತಿರುಗಿ",
+
+            managementTitle = "ನಿರ್ವಹಣಾ ಕ್ರಮಗಳು",
+            managementText = "ಗುರುತಿಸಲಾದ ರೋಗಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಸೂಕ್ತ ನಿರ್ವಹಣಾ ಕ್ರಮಗಳನ್ನು ಅನುಸರಿಸಿ.",
+            treatmentPreventionText = "ತಡೆಗಟ್ಟುವ ಕ್ರಮಗಳು",
+            treatmentCaution = "ರೇಷ್ಮೆ ಹುಳುಗಳಿಗೆ ಆಹಾರವಾಗಿ ಬಳಸುವ ಎಲೆಗಳ ಮೇಲೆ ಯಾವುದೇ ರಾಸಾಯನಿಕ ಬಳಸುವ ಮೊದಲು ಸ್ಥಳೀಯ ರೇಷ್ಮೆ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ.",
+            healthyResultTitle = "ಎಲೆ ಆರೋಗ್ಯಕರವಾಗಿ ಕಾಣುತ್ತದೆ",
+            healthyResultText = "ಬೆಳೆಯನ್ನು ನಿಯಮಿತವಾಗಿ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಸೂಕ್ತ ಸ್ವಚ್ಛತೆಯನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ."
         )
 
         "Telugu" -> AppStrings(
@@ -249,7 +289,20 @@ private fun translationsFor(language: String): AppStrings {
             confidenceLabel = "నమ్మక స్థాయి:",
             sampleValueOnly = "నమూనా విలువ మాత్రమే",
             sampleDisclaimer = "ఇది ప్రదర్శన కోసం మాత్రమే ఇచ్చిన నమూనా సమాచారం, నిజమైన AI నిర్ధారణ కాదు. శిక్షణ పొందిన AI మోడల్‌ను అనుసంధానించిన తర్వాత వ్యాధి గుర్తింపు అందుబాటులో ఉంటుంది.",
-            backToScanner = "స్కానర్‌కు తిరిగి వెళ్లండి"
+            backToScanner = "స్కానర్‌కు తిరిగి వెళ్లండి",
+
+            treatmentTitle = "చికిత్స మరియు నిర్వహణ",
+            treatmentButton = "చికిత్స మరియు నిర్వహణ చూడండి",
+            treatmentDescription = "వ్యాధికి అనుగుణమైన చికిత్స మరియు పంట నిర్వహణ మార్గదర్శకత్వం.",
+            preventionTitle = "నివారణ చర్యలు",
+            backToResults = "ఫలితాలకు తిరిగి వెళ్లండి",
+
+            managementTitle = "నిర్వహణ చర్యలు",
+            managementText = "గుర్తించిన వ్యాధికి అనుగుణంగా తగిన నిర్వహణ చర్యలను అనుసరించండి.",
+            treatmentPreventionText = "నివారణ చర్యలు",
+            treatmentCaution = "పట్టుపురుగులకు ఆహారంగా ఉపయోగించే ఆకులపై ఏదైనా రసాయనం వాడే ముందు స్థానిక సెరికల్చర్ నిపుణుడిని సంప్రదించండి.",
+            healthyResultTitle = "ఆకు ఆరోగ్యంగా కనిపిస్తోంది",
+            healthyResultText = "పంటను క్రమం తప్పకుండా పరిశీలించండి మరియు సరైన పరిశుభ్రతను పాటించండి."
         )
 
         else -> AppStrings(
@@ -300,7 +353,20 @@ private fun translationsFor(language: String): AppStrings {
             confidenceLabel = "Confidence:",
             sampleValueOnly = "Sample value only",
             sampleDisclaimer = "This is sample data for demonstration only, not an actual AI diagnosis. Disease detection will become available after integration of the trained AI model.",
-            backToScanner = "Back to Scanner"
+            backToScanner = "Back to Scanner",
+
+            treatmentTitle = "Treatment & Intervention",
+            treatmentButton = "View Treatment & Intervention",
+            treatmentDescription = "Treatment and crop management guidance based on the detected disease.",
+            preventionTitle = "Prevention Measures",
+            backToResults = "Back to Results",
+
+            managementTitle = "Management Measures",
+            managementText = "Follow appropriate management practices for the identified disease.",
+            treatmentPreventionText = "Prevention Measures",
+            treatmentCaution = "Consult a local sericulture expert before applying any chemical to leaves used as silkworm feed.",
+            healthyResultTitle = "The leaf appears healthy",
+            healthyResultText = "Monitor the crop regularly and maintain proper field hygiene."
         )
     }
 }
@@ -360,11 +426,26 @@ fun BharatAIHomeScreen() {
                 onLanguageChange = { language ->
                     selectedLanguage = language
                 },
+                onTreatmentClick = {
+                    selectedTab = "Treatment"
+                },
                 onBack = {
                     selectedTab = "Scan"
                 }
             )
         }
+        return
+    }
+
+    if (selectedTab == "Treatment") {
+        TreatmentScreen(
+            prediction = prediction,
+            strings = strings,
+            selectedLanguage = selectedLanguage,
+            onBack = {
+                selectedTab = "Results"
+            }
+        )
         return
     }
 
@@ -742,6 +823,7 @@ private fun DiagnosisResultsScreen(
     prediction: MulberryPrediction?,
     isAnalyzing: Boolean,
     analysisError: String?,
+    onTreatmentClick: () -> Unit,
     onBack: () -> Unit
 ) {
     var languageMenu by remember { mutableStateOf(false) }
@@ -897,9 +979,153 @@ private fun DiagnosisResultsScreen(
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(
+                onClick = onTreatmentClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Green
+                )
+            ) {
+                Text(
+                    text = strings.treatmentButton,
+                    color = Color.White
+                )
+            }
         }
     }
 }
+
+
+
+@Composable
+private fun TreatmentScreen(
+    prediction: MulberryPrediction?,
+    strings: AppStrings,
+    selectedLanguage: String,
+    onBack: () -> Unit
+) {
+    val diseaseName = prediction?.diseaseName ?: ""
+
+    val advice = getTreatmentAdvice(
+        diseaseName = diseaseName,
+        language = selectedLanguage
+    )
+
+    val isHealthy = diseaseName.lowercase().let {
+        it.contains("disease free") || it.contains("healthy")
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp)
+    ) {
+        TextButton(onClick = onBack) {
+            Text(
+                text = "← ${strings.backToResults}",
+                color = Green
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = strings.treatmentTitle,
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            color = Green
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            ),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+
+                Text(
+                    text = strings.diseaseLabel,
+                    fontWeight = FontWeight.Bold,
+                    color = Green
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = diseaseName.ifBlank {
+                        "No diagnosis available"
+                    },
+                    fontSize = 18.sp,
+                    color = DarkText
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = if (isHealthy)
+                        strings.healthyResultTitle
+                    else
+                        strings.managementTitle,
+                    fontWeight = FontWeight.Bold,
+                    color = Green,
+                    fontSize = 18.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = if (isHealthy)
+                        strings.healthyResultText
+                    else
+                        advice.first,
+                    color = DarkText
+                )
+
+                Spacer(modifier = Modifier.height(18.dp))
+
+                Text(
+                    text = strings.preventionTitle,
+                    fontWeight = FontWeight.Bold,
+                    color = Green,
+                    fontSize = 18.sp
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = advice.second,
+                    color = DarkText
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFFFF3E0)
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Text(
+                text = "⚠ ${strings.treatmentCaution}",
+                modifier = Modifier.padding(16.dp),
+                color = Color(0xFF8A4B08),
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+
 
 
 // Reusable Feature Card
@@ -1206,6 +1432,99 @@ private fun CropScannerScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("🖼️  ${strings.uploadImage}")
+        }
+    }
+}
+
+
+private fun getTreatmentAdvice(
+    diseaseName: String,
+    language: String
+): Pair<String, String> {
+
+    val disease = diseaseName.lowercase()
+
+    val isRust = disease.contains("rust")
+    val isSpot = disease.contains("spot")
+    val isHealthy = disease.contains("disease free") ||
+            disease.contains("healthy")
+
+    return when (language) {
+
+        "Hindi" -> when {
+            isRust -> Pair(
+                "पौधों के बीच पर्याप्त दूरी रखें ताकि हवा का संचार अच्छा रहे। पत्तियों की कटाई में अनावश्यक देरी न करें। प्रभावित पत्तियों की नियमित जांच करें।",
+                "खेत में हवा का अच्छा प्रवाह बनाए रखें। संक्रमित पत्तियों पर नजर रखें और खेत की नियमित सफाई करें।"
+            )
+            isSpot -> Pair(
+                "अधिक प्रभावित पत्तियों को सावधानी से हटाएं। संक्रमित पौधों की सामग्री को स्वस्थ पौधों से दूर रखें।",
+                "पौधों के बीच उचित दूरी रखें। खेत की सफाई बनाए रखें और बारिश के बाद पत्तियों की जांच करें।"
+            )
+            isHealthy -> Pair(
+                "इस मॉडल ने पत्ती को रोग-मुक्त श्रेणी में रखा है।",
+                "नियमित रूप से पत्तियों की जांच करें और खेत की स्वच्छता बनाए रखें।"
+            )
+            else -> Pair(
+                "रोग की पुष्टि के लिए कृषि विशेषज्ञ से सलाह लें।",
+                "फसल की नियमित निगरानी करें।"
+            )
+        }
+
+        "Kannada" -> when {
+            isRust -> Pair(
+                "ಸಸ್ಯಗಳ ನಡುವೆ ಸಾಕಷ್ಟು ಅಂತರವಿರಲಿ, ಇದರಿಂದ ಗಾಳಿಯ ಸಂಚಾರ ಉತ್ತಮವಾಗಿರುತ್ತದೆ. ಎಲೆ ಕೊಯ್ಲಿನಲ್ಲಿ ಅನಗತ್ಯ ವಿಳಂಬ ಮಾಡಬೇಡಿ. ಬಾಧಿತ ಎಲೆಗಳನ್ನು ನಿಯಮಿತವಾಗಿ ಪರಿಶೀಲಿಸಿ.",
+                "ಉತ್ತಮ ಗಾಳಿಯ ಸಂಚಾರವನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ. ಸೋಂಕಿತ ಎಲೆಗಳನ್ನು ಗಮನಿಸಿ ಮತ್ತು ತೋಟವನ್ನು ಸ್ವಚ್ಛವಾಗಿಡಿ."
+            )
+            isSpot -> Pair(
+                "ತೀವ್ರವಾಗಿ ಬಾಧಿತ ಎಲೆಗಳನ್ನು ಎಚ್ಚರಿಕೆಯಿಂದ ತೆಗೆದುಹಾಕಿ. ಸೋಂಕಿತ ಸಸ್ಯದ ಭಾಗಗಳನ್ನು ಆರೋಗ್ಯಕರ ಸಸ್ಯಗಳಿಂದ ದೂರವಿಡಿ.",
+                "ಸಸ್ಯಗಳ ನಡುವೆ ಸೂಕ್ತ ಅಂತರವಿರಲಿ. ತೋಟದ ಸ್ವಚ್ಛತೆಯನ್ನು ಕಾಪಾಡಿ ಮತ್ತು ಮಳೆಯ ನಂತರ ಎಲೆಗಳನ್ನು ಪರಿಶೀಲಿಸಿ."
+            )
+            isHealthy -> Pair(
+                "ಈ ಮಾದರಿಯು ಎಲೆಯನ್ನು ರೋಗಮುಕ್ತ ವರ್ಗದಲ್ಲಿ ಗುರುತಿಸಿದೆ.",
+                "ಎಲೆಗಳನ್ನು ನಿಯಮಿತವಾಗಿ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ತೋಟದ ಸ್ವಚ್ಛತೆಯನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ."
+            )
+            else -> Pair(
+                "ರೋಗವನ್ನು ದೃಢೀಕರಿಸಲು ಕೃಷಿ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ.",
+                "ಬೆಳೆಯನ್ನು ನಿಯಮಿತವಾಗಿ ಪರಿಶೀಲಿಸಿ."
+            )
+        }
+
+        "Telugu" -> when {
+            isRust -> Pair(
+                "మొక్కల మధ్య తగినంత దూరం ఉంచి గాలి ప్రసరణ మెరుగుపరచండి. ఆకుల కోతలో అనవసరమైన ఆలస్యం చేయవద్దు. ప్రభావిత ఆకులను క్రమం తప్పకుండా పరిశీలించండి.",
+                "మంచి గాలి ప్రసరణ ఉండేలా చూడండి. సోకిన ఆకులను గమనిస్తూ తోటను శుభ్రంగా ఉంచండి."
+            )
+            isSpot -> Pair(
+                "తీవ్రంగా ప్రభావితమైన ఆకులను జాగ్రత్తగా తొలగించండి. సోకిన మొక్కల భాగాలను ఆరోగ్యకరమైన మొక్కలకు దూరంగా ఉంచండి.",
+                "మొక్కల మధ్య తగినంత దూరం ఉంచండి. తోట పరిశుభ్రతను పాటించండి మరియు వర్షం తర్వాత ఆకులను పరిశీలించండి."
+            )
+            isHealthy -> Pair(
+                "ఈ మోడల్ ఆకును వ్యాధి లేని వర్గంగా గుర్తించింది.",
+                "ఆకులను క్రమం తప్పకుండా పరిశీలించండి మరియు తోట పరిశుభ్రతను పాటించండి."
+            )
+            else -> Pair(
+                "వ్యాధిని నిర్ధారించడానికి వ్యవసాయ నిపుణుడిని సంప్రదించండి.",
+                "పంటను క్రమం తప్పకుండా పరిశీలించండి."
+            )
+        }
+
+        else -> when {
+            isRust -> Pair(
+                "Maintain adequate spacing between plants to improve airflow. Avoid delaying leaf harvesting. Regularly inspect affected leaves.",
+                "Maintain good air circulation. Monitor infected leaves and keep the mulberry garden clean."
+            )
+            isSpot -> Pair(
+                "Carefully remove severely affected leaves. Keep infected plant material away from healthy plants.",
+                "Maintain adequate plant spacing. Keep the garden clean and inspect leaves after rainfall."
+            )
+            isHealthy -> Pair(
+                "The model has classified this leaf as disease-free.",
+                "Inspect leaves regularly and maintain good field hygiene."
+            )
+            else -> Pair(
+                "Consult an agricultural expert to confirm the disease.",
+                "Monitor the crop regularly."
+            )
         }
     }
 }
