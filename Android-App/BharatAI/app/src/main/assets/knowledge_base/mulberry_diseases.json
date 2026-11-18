@@ -1,0 +1,31 @@
+﻿{
+  "crop": "Mulberry",
+  "records": [
+    {
+      "id": "leaf_rust",
+      "classifier_label": "Leaf Rust",
+      "disease_name": "Mulberry leaf rust",
+      "symptoms": [
+        "Small, raised, brownish-to-black spots on leaf surfaces",
+        "Affected leaves may turn yellow",
+        "Severe infection may cause premature leaf fall"
+      ],
+      "treatment_guidance": null,
+      "safety_note": "Do not apply a pesticide based only on the AI image classification. Consult a local sericulture or agriculture expert.",
+      "source": "CSRTI, Diseases and Pests of Mulberry and Their Control (1991)",
+      "source_url": "https://www.csrtimys.res.in/sites/default/files/ebooks/1991-1.pdf",
+      "status": "initial_reference"
+    },
+    {
+      "id": "leaf_spot",
+      "classifier_label": "Leaf spot",
+      "disease_name": "Mulberry leaf spot",
+      "symptoms": [],
+      "treatment_guidance": null,
+      "safety_note": "Do not apply a pesticide based only on the AI image classification. Consult a local sericulture or agriculture expert.",
+      "source": null,
+      "source_url": null,
+      "status": "needs_verified_reference"
+    }
+  ]
+}

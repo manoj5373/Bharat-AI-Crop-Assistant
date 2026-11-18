@@ -35,6 +35,13 @@ import androidx.core.content.FileProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
 
 // Application colours
 private val Green = Color(0xFF166534)
@@ -45,7 +52,7 @@ private val GreyText = Color(0xFF647067)
 
 // All text displayed in the application is kept in one place.
 // Add future screen translations to this data class and translationsFor().
-private data class AppStrings(
+data class AppStrings(
     val appSubtitle: String,
     val welcome: String,
     val welcomeDescription: String,
@@ -108,7 +115,21 @@ private data class AppStrings(
     val treatmentPreventionText: String,
     val treatmentCaution: String,
     val healthyResultTitle: String,
-    val healthyResultText: String
+    val healthyResultText: String,
+
+    // Farmer Profile translations
+    val profileTitle: String,
+    val profileDescription: String,
+    val personalInformation: String,
+    val farmerNameLabel: String,
+    val phoneNumberLabel: String,
+    val farmInformation: String,
+    val villageLabel: String,
+    val districtLabel: String,
+    val stateLabel: String,
+    val editProfile: String,
+    val saveProfile: String,
+    val phoneNumberError: String
 
 )
 
@@ -175,7 +196,20 @@ private fun translationsFor(language: String): AppStrings {
             treatmentPreventionText = "रोकथाम के उपाय",
             treatmentCaution = "रेशम के कीड़ों को खिलाने के लिए उपयोग की जाने वाली पत्तियों पर कोई भी रसायन इस्तेमाल करने से पहले स्थानीय रेशम विशेषज्ञ से सलाह लें।",
             healthyResultTitle = "पत्ती स्वस्थ दिखाई देती है",
-            healthyResultText = "फसल की नियमित निगरानी करें और उचित स्वच्छता बनाए रखें।"
+            healthyResultText = "फसल की नियमित निगरानी करें और उचित स्वच्छता बनाए रखें।",
+
+            profileTitle = "किसान प्रोफ़ाइल",
+            profileDescription = "अपनी व्यक्तिगत और कृषि जानकारी प्रबंधित करें",
+            personalInformation = "व्यक्तिगत जानकारी",
+            farmerNameLabel = "किसान का नाम",
+            phoneNumberLabel = "फ़ोन नंबर",
+            farmInformation = "खेत की जानकारी",
+            villageLabel = "गाँव",
+            districtLabel = "ज़िला",
+            stateLabel = "राज्य",
+            editProfile = "प्रोफ़ाइल संपादित करें",
+            saveProfile = "प्रोफ़ाइल सहेजें",
+            phoneNumberError = "फ़ोन नंबर में ठीक 10 अंक होने चाहिए।"
         )
 
         "Kannada" -> AppStrings(
@@ -238,7 +272,20 @@ private fun translationsFor(language: String): AppStrings {
             treatmentPreventionText = "ತಡೆಗಟ್ಟುವ ಕ್ರಮಗಳು",
             treatmentCaution = "ರೇಷ್ಮೆ ಹುಳುಗಳಿಗೆ ಆಹಾರವಾಗಿ ಬಳಸುವ ಎಲೆಗಳ ಮೇಲೆ ಯಾವುದೇ ರಾಸಾಯನಿಕ ಬಳಸುವ ಮೊದಲು ಸ್ಥಳೀಯ ರೇಷ್ಮೆ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ.",
             healthyResultTitle = "ಎಲೆ ಆರೋಗ್ಯಕರವಾಗಿ ಕಾಣುತ್ತದೆ",
-            healthyResultText = "ಬೆಳೆಯನ್ನು ನಿಯಮಿತವಾಗಿ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಸೂಕ್ತ ಸ್ವಚ್ಛತೆಯನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ."
+            healthyResultText = "ಬೆಳೆಯನ್ನು ನಿಯಮಿತವಾಗಿ ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಸೂಕ್ತ ಸ್ವಚ್ಛತೆಯನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ.",
+
+            profileTitle = "ರೈತರ ಪ್ರೊಫೈಲ್",
+            profileDescription = "ನಿಮ್ಮ ವೈಯಕ್ತಿಕ ಮತ್ತು ಕೃಷಿ ಮಾಹಿತಿಯನ್ನು ನಿರ್ವಹಿಸಿ",
+            personalInformation = "ವೈಯಕ್ತಿಕ ಮಾಹಿತಿ",
+            farmerNameLabel = "ರೈತರ ಹೆಸರು",
+            phoneNumberLabel = "ದೂರವಾಣಿ ಸಂಖ್ಯೆ",
+            farmInformation = "ಕೃಷಿ ಮಾಹಿತಿ",
+            villageLabel = "ಗ್ರಾಮ",
+            districtLabel = "ಜಿಲ್ಲೆ",
+            stateLabel = "ರಾಜ್ಯ",
+            editProfile = "ಪ್ರೊಫೈಲ್ ಸಂಪಾದಿಸಿ",
+            saveProfile = "ಪ್ರೊಫೈಲ್ ಉಳಿಸಿ",
+            phoneNumberError = "ದೂರವಾಣಿ ಸಂಖ್ಯೆಯಲ್ಲಿ ನಿಖರವಾಗಿ 10 ಅಂಕಿಗಳಿರಬೇಕು."
         )
 
         "Telugu" -> AppStrings(
@@ -302,7 +349,19 @@ private fun translationsFor(language: String): AppStrings {
             treatmentPreventionText = "నివారణ చర్యలు",
             treatmentCaution = "పట్టుపురుగులకు ఆహారంగా ఉపయోగించే ఆకులపై ఏదైనా రసాయనం వాడే ముందు స్థానిక సెరికల్చర్ నిపుణుడిని సంప్రదించండి.",
             healthyResultTitle = "ఆకు ఆరోగ్యంగా కనిపిస్తోంది",
-            healthyResultText = "పంటను క్రమం తప్పకుండా పరిశీలించండి మరియు సరైన పరిశుభ్రతను పాటించండి."
+            healthyResultText = "పంటను క్రమం తప్పకుండా పరిశీలించండి మరియు సరైన పరిశుభ్రతను పాటించండి.",
+            profileTitle = "రైతు ప్రొఫైల్",
+            profileDescription = "మీ వ్యక్తిగత మరియు వ్యవసాయ సమాచారాన్ని నిర్వహించండి",
+            personalInformation = "వ్యక్తిగత సమాచారం",
+            farmerNameLabel = "రైతు పేరు",
+            phoneNumberLabel = "ఫోన్ నంబర్",
+            farmInformation = "వ్యవసాయ సమాచారం",
+            villageLabel = "గ్రామం",
+            districtLabel = "జిల్లా",
+            stateLabel = "రాష్ట్రం",
+            editProfile = "ప్రొఫైల్‌ను సవరించండి",
+            saveProfile = "ప్రొఫైల్‌ను సేవ్ చేయండి",
+            phoneNumberError = "ఫోన్ నంబర్‌లో ఖచ్చితంగా 10 అంకెలు ఉండాలి."
         )
 
         else -> AppStrings(
@@ -366,7 +425,19 @@ private fun translationsFor(language: String): AppStrings {
             treatmentPreventionText = "Prevention Measures",
             treatmentCaution = "Consult a local sericulture expert before applying any chemical to leaves used as silkworm feed.",
             healthyResultTitle = "The leaf appears healthy",
-            healthyResultText = "Monitor the crop regularly and maintain proper field hygiene."
+            healthyResultText = "Monitor the crop regularly and maintain proper field hygiene.",
+            profileTitle = "Farmer Profile",
+            profileDescription = "Manage your personal and farm information",
+            personalInformation = "Personal Information",
+            farmerNameLabel = "Farmer Name",
+            phoneNumberLabel = "Phone Number",
+            farmInformation = "Farm Information",
+            villageLabel = "Village",
+            districtLabel = "District",
+            stateLabel = "State",
+            editProfile = "Edit Profile",
+            saveProfile = "Save Profile",
+            phoneNumberError = "Phone number must contain exactly 10 digits."
         )
     }
 }
@@ -387,15 +458,48 @@ class MainActivity : ComponentActivity() {
 // Home Screen
 @Composable
 fun BharatAIHomeScreen() {
+
     var selectedLanguage by remember { mutableStateOf("English") }
     var languageMenu by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf("Home") }
     var message by remember { mutableStateOf("") }
-    var selectedCropImage by remember { mutableStateOf<Bitmap?>(null) }
 
+// Farmer Profile Information
+    var farmerName by remember { mutableStateOf("") }
+    var farmerPhone by remember { mutableStateOf("") }
+    var farmerVillage by remember { mutableStateOf("") }
+    var farmerDistrict by remember { mutableStateOf("") }
+    var farmerState by remember { mutableStateOf("") }
+
+// Selected Crop Image
+    var selectedCropImage by remember {
+        mutableStateOf<Bitmap?>(null)
+    }
+
+// Context
     val context = LocalContext.current
+
+// DataStore connection
+    val profileDataStore = remember {
+        ProfileDataStore(context)
+    }
+
+    val savedProfile by profileDataStore.profile.collectAsState(
+        initial = FarmerProfile()
+    )
+
     val scope = rememberCoroutineScope()
 
+// Load saved farmer information
+    LaunchedEffect(savedProfile) {
+        farmerName = savedProfile.name
+        farmerPhone = savedProfile.phone
+        farmerVillage = savedProfile.village
+        farmerDistrict = savedProfile.district
+        farmerState = savedProfile.state
+    }
+
+// Existing classifier variables
     var classifier by remember {
         mutableStateOf<MulberryClassifier?>(null)
     }
@@ -445,6 +549,40 @@ fun BharatAIHomeScreen() {
             onBack = {
                 selectedTab = "Results"
             }
+        )
+        return
+    }
+
+    if (selectedTab == "Profile") {
+        ProfileScreen(
+            farmerName = farmerName,
+            farmerPhone = farmerPhone,
+            farmerVillage = farmerVillage,
+            farmerDistrict = farmerDistrict,
+            farmerState = farmerState,
+            strings = strings,
+
+            onFarmerNameChange = { farmerName = it },
+            onFarmerPhoneChange = { farmerPhone = it },
+            onFarmerVillageChange = { farmerVillage = it },
+            onFarmerDistrictChange = { farmerDistrict = it },
+            onFarmerStateChange = { farmerState = it },
+
+            onBack = { selectedTab = "Home" },
+
+            onSave = {
+                scope.launch {
+                    profileDataStore.saveProfile(
+                        FarmerProfile(
+                            name = farmerName,
+                            phone = farmerPhone,
+                            village = farmerVillage,
+                            district = farmerDistrict,
+                            state = farmerState
+                        )
+                    )
+                }
+            },
         )
         return
     }
@@ -826,6 +964,17 @@ private fun DiagnosisResultsScreen(
     onTreatmentClick: () -> Unit,
     onBack: () -> Unit
 ) {
+    val appContext = androidx.compose.ui.platform.LocalContext.current
+
+    val knowledgeBase = remember(appContext) {
+        MulberryKnowledgeBase(appContext)
+    }
+
+    val diseaseInfo = remember(prediction, knowledgeBase) {
+        prediction?.let {
+            knowledgeBase.findDisease(it.diseaseName)
+        }
+    }
     var languageMenu by remember { mutableStateOf(false) }
 
     val languageDisplayName = when (selectedLanguage) {
@@ -972,6 +1121,67 @@ private fun DiagnosisResultsScreen(
                             fontSize = 13.sp,
                             color = GreyText
                         )
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        if (diseaseInfo != null) {
+
+                            Text(
+                                text = "Disease Information",
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Green
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Verified symptoms",
+                                fontWeight = FontWeight.Bold,
+                                color = DarkText
+                            )
+
+                            if (diseaseInfo.symptoms.isEmpty()) {
+                                Text("Verified symptom information is not available yet.")
+                            } else {
+                                diseaseInfo.symptoms.forEach { symptom ->
+                                    Text("• $symptom", color = DarkText)
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Treatment: Not yet verified",
+                                fontWeight = FontWeight.Bold,
+                                color = DarkText
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Safety: ${diseaseInfo.safetyNote}",
+                                color = Color(0xFFB45309)
+                            )
+
+                        } else if (prediction.diseaseName == "Disease Free leaves") {
+                            Text(
+                                text = "No disease was detected by the AI classifier.",
+                                color = Green,
+                                fontWeight = FontWeight.Bold
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(
+                                text = "Continue regular crop monitoring. This result does not guarantee that the plant is completely disease-free.",
+                                color = GreyText
+                            )
+                        } else {
+                            Text(
+                                text = "No verified advisory information is available for this classification yet.",
+                                color = GreyText
+                            )
+                        }
                     }
 
                     else -> {
@@ -1432,6 +1642,253 @@ private fun CropScannerScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("🖼️  ${strings.uploadImage}")
+        }
+    }
+}
+
+
+
+@Composable
+fun ProfileScreen(
+    strings: AppStrings,
+    farmerName: String,
+    farmerPhone: String,
+    farmerVillage: String,
+    farmerDistrict: String,
+    farmerState: String,
+
+    onFarmerNameChange: (String) -> Unit,
+    onFarmerPhoneChange: (String) -> Unit,
+    onFarmerVillageChange: (String) -> Unit,
+    onFarmerDistrictChange: (String) -> Unit,
+    onFarmerStateChange: (String) -> Unit,
+    onSave: () -> Unit,
+
+    onBack: () -> Unit
+) {
+    var isEditing by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp)
+    ) {
+
+        // Header
+        Text(
+            text = "strings.profileTitle",
+            style = MaterialTheme.typography.headlineMedium,
+            color = Green
+        )
+
+        Text(
+            text = "strings.profileDescription",
+            color = GreyText,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Personal Information
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+
+                Text(
+                    text = "strings.personalInformation",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Green
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = farmerName,
+                    onValueChange = onFarmerNameChange,
+                    label = { Text("strings.farmerNameLabel") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = isEditing,
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.Black
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedLabelColor = Color.DarkGray,
+                        unfocusedLabelColor = Color.DarkGray,
+                        disabledLabelColor = Color.DarkGray,
+                        cursorColor = Green
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = farmerPhone,
+                    onValueChange = { input ->
+                        if (input.all { it.isDigit() } && input.length <= 10) {
+                            onFarmerPhoneChange(input)
+                        }
+                    },
+                    label = { Text("strings.phoneNumberLabel") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = isEditing,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number
+                    ),
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.Black
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedLabelColor = Color.DarkGray,
+                        unfocusedLabelColor = Color.DarkGray,
+                        disabledLabelColor = Color.DarkGray,
+                        cursorColor = Green
+                    )
+                )
+                if (isEditing && farmerPhone.isNotEmpty() && farmerPhone.length != 10) {
+                    Text(
+                        text = "Phone number must contain exactly 10 digits",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Farm Information
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+
+                Text(
+                    text = "strings.farmInformation",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Green
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = farmerVillage,
+                    onValueChange = onFarmerVillageChange,
+                    label = { Text("strings.villageLabel") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = isEditing,
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.Black
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedLabelColor = Color.DarkGray,
+                        unfocusedLabelColor = Color.DarkGray,
+                        disabledLabelColor = Color.DarkGray,
+                        cursorColor = Green
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = farmerDistrict,
+                    onValueChange = onFarmerDistrictChange,
+                    label = { Text("strings.districtLabel") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = isEditing,
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.Black
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedLabelColor = Color.DarkGray,
+                        unfocusedLabelColor = Color.DarkGray,
+                        disabledLabelColor = Color.DarkGray,
+                        cursorColor = Green
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                OutlinedTextField(
+                    value = farmerState,
+                    onValueChange = onFarmerStateChange,
+                    label = { Text("strings.stateLabel") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    enabled = isEditing,
+                    textStyle = MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.Black
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.Black,
+                        unfocusedTextColor = Color.Black,
+                        focusedLabelColor = Color.DarkGray,
+                        unfocusedLabelColor = Color.DarkGray,
+                        disabledLabelColor = Color.DarkGray,
+                        cursorColor = Green
+                    )
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Edit and Save Buttons
+        if (isEditing) {
+            Button(
+                onClick = {
+                    if (farmerPhone.length == 10) {
+                        onSave()
+                        isEditing = false
+                    }
+                },
+                enabled = farmerPhone.length == 10,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Green
+                )
+            ) {
+                Text("strings.saveProfile")
+            }
+        } else {
+            Button(
+                onClick = { isEditing = true },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Green
+                )
+            ) {
+                Text("strings.editProfile")
+            }
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = onBack,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text("Back to Home")
         }
     }
 }
