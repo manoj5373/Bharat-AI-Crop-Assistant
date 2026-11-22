@@ -1,5 +1,6 @@
 package com.bharatai.cropassistant
 
+
 import androidx.exifinterface.media.ExifInterface
 import android.graphics.Matrix
 import android.os.Bundle
@@ -42,6 +43,21 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.rememberCoroutineScope
+
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import android.util.Log
+
+import org.pytorch.executorch.extension.llm.LlmCallback
+
+private const val ENABLE_LLAMA_EXPLANATION = true
 
 // Application colours
 private val Green = Color(0xFF166534)
@@ -447,11 +463,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+
         setContent {
             BharatAITheme {
                 BharatAIHomeScreen()
             }
         }
+
     }
 }
 
@@ -591,39 +609,68 @@ fun BharatAIHomeScreen() {
         CropScannerScreen(
             strings = strings,
             selectedImage = selectedCropImage,
+            isAnalyzing = isAnalyzing,
+
             onImageChange = { image ->
                 selectedCropImage = image
             },
+
             onBack = {
                 selectedCropImage = null
                 selectedTab = "Home"
             },
+
             onAnalyze = { image ->
-                selectedCropImage = image
-                isAnalyzing = true
-                analysisError = null
-                prediction = null
+
+                if (isAnalyzing) {
+                    Log.w("BharatAI_Debug", "Analysis already running. Ignoring duplicate request.")
+                } else {
+
+                    Log.d("BharatAI_Debug", "onAnalyze callback started")
+
+                    selectedCropImage = image
+                    isAnalyzing = true
+                    analysisError = null
+                    prediction = null
 
                 val existingClassifier = classifier
 
                 scope.launch {
                     try {
-                        val (loadedClassifier, result) = withContext(Dispatchers.Default) {
-                            val activeClassifier =
-                                existingClassifier ?: MulberryClassifier(context)
+                        Log.d("BharatAI_Debug", "Starting classifier")
 
-                            activeClassifier to activeClassifier.predict(image)
-                        }
+                        val (loadedClassifier, result) =
+                            withContext(Dispatchers.Default) {
+                                val activeClassifier =
+                                    existingClassifier ?: MulberryClassifier(context)
+
+                                Log.d("BharatAI_Debug", "Calling predict()")
+
+                                activeClassifier to activeClassifier.predict(image)
+                            }
+
+                        Log.d(
+                            "BharatAI_Debug",
+                            "Prediction completed: ${result.diseaseName}"
+                        )
 
                         classifier = loadedClassifier
                         prediction = result
                         selectedTab = "Results"
 
                     } catch (e: Exception) {
-                        analysisError = e.localizedMessage ?: "Unable to analyze this image."
+                        Log.e("BharatAI_Debug", "Classification failed", e)
+
+                        analysisError =
+                            e.localizedMessage ?: "Unable to analyze this image."
+
+                        selectedTab = "Results"
+
                     } finally {
                         isAnalyzing = false
+                        Log.d("BharatAI_Debug", "Analysis finished")
                     }
+                }
                 }
             }
         )
@@ -767,8 +814,10 @@ fun BharatAIHomeScreen() {
 
                     Button(
                         onClick = {
+                            Log.d("BharatAI_Debug", "Scan Now button clicked")
                             selectedTab = "Scan"
                             message = ""
+                            Log.d("BharatAI_Debug", "Selected tab: $selectedTab")
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.White,
@@ -966,6 +1015,32 @@ private fun DiagnosisResultsScreen(
 ) {
     val appContext = androidx.compose.ui.platform.LocalContext.current
 
+    val llamaAssistant = remember(appContext) {
+        LlamaAssistant(appContext.applicationContext)
+    }
+
+    val scope = rememberCoroutineScope()
+
+    var llamaLoaded by remember {
+        mutableStateOf(false)
+    }
+
+    var isGeneratingExplanation by remember {
+        mutableStateOf(false)
+    }
+
+    var llamaExplanation by remember {
+        mutableStateOf("")
+    }
+
+    var llamaStatus by remember {
+        mutableStateOf("Ready to generate explanation")
+    }
+
+    val mainHandler = remember {
+        android.os.Handler(android.os.Looper.getMainLooper())
+    }
+
     val knowledgeBase = remember(appContext) {
         MulberryKnowledgeBase(appContext)
     }
@@ -975,6 +1050,119 @@ private fun DiagnosisResultsScreen(
             knowledgeBase.findDisease(it.diseaseName)
         }
     }
+
+    LaunchedEffect(
+        image,
+        prediction?.diseaseName,
+        prediction?.confidence,
+        selectedLanguage,
+        isAnalyzing,
+        analysisError
+    ) {
+        val currentPrediction = prediction
+
+        if (
+            !ENABLE_LLAMA_EXPLANATION ||
+            currentPrediction == null ||
+            isAnalyzing ||
+            analysisError != null
+        ) {
+            return@LaunchedEffect
+        }
+
+        val symptoms = diseaseInfo?.symptoms ?: emptyList()
+
+        val safety = diseaseInfo?.safetyNote
+            ?: "Consult a local sericulture or agriculture expert."
+
+
+
+
+        val prompt = """
+    <|start_header_id|>system<|end_header_id|>
+
+    You are Bharat AI, an assistant for mulberry farmers.
+    Use simple English.
+    The disease name provided is a classifier label,
+    NOT a dataset name.
+    Explain the predicted condition directly.
+    Explain that confidence is not a guarantee.
+    Give one simple and safe recommendation.
+    Do not discuss datasets, AI models, or training data.
+    Do not invent medicines or treatments.
+    Use exactly 2 short sentences and fewer than 35 words.
+    <|eot_id|><|start_header_id|>user<|end_header_id|>
+
+    Classifier result: ${currentPrediction.diseaseName}
+    Confidence: ${(currentPrediction.confidence * 100).toInt()}%.
+    Explain this result to the farmer.
+    <|eot_id|><|start_header_id|>assistant<|end_header_id|>
+""".trimIndent()
+
+
+        llamaExplanation = ""
+        isGeneratingExplanation = true
+        llamaStatus = "Preparing Llama model..."
+
+        try {
+            withContext(Dispatchers.IO) {
+                if (!llamaLoaded) {
+                    llamaAssistant.load()
+                }
+            }
+
+            llamaLoaded = true
+            llamaStatus = "Generating farmer-friendly explanation..."
+
+            Log.d("LLAMA_DEBUG", "Before generate()")
+
+            withContext(Dispatchers.IO) {
+                llamaAssistant.generate(
+                    prompt,
+                    object : LlmCallback {
+
+                        override fun onResult(result: String) {
+                            Log.d("LLAMA_DEBUG", "Token received: $result")
+
+                            mainHandler.post {
+                                llamaExplanation += result
+                            }
+                        }
+
+                        override fun onStats(stats: String) {
+                            Log.d("LLAMA_DEBUG", "Generation completed: $stats")
+
+                            mainHandler.post {
+                                isGeneratingExplanation = false
+                                llamaStatus = "Explanation generated!"
+                            }
+                        }
+
+                        override fun onError(errorCode: Int, message: String) {
+                            Log.e(
+                                "LLAMA_DEBUG",
+                                "Generation error: $errorCode, $message"
+                            )
+
+                            mainHandler.post {
+                                isGeneratingExplanation = false
+                                llamaStatus = "Generation error $errorCode: $message"
+                            }
+                        }
+                    }
+                )
+            }
+
+            Log.d("LLAMA_DEBUG", "generate() returned")
+
+        } catch (e: Exception) {
+            mainHandler.post {
+                isGeneratingExplanation = false
+                llamaStatus = "Error: ${e.message}"
+            }
+        }
+    }
+
     var languageMenu by remember { mutableStateOf(false) }
 
     val languageDisplayName = when (selectedLanguage) {
@@ -1188,24 +1376,102 @@ private fun DiagnosisResultsScreen(
                         Text("No prediction available.")
                     }
                 }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
 
-            Button(
-                onClick = onTreatmentClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Green
-                )
-            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 Text(
-                    text = strings.treatmentButton,
-                    color = Color.White
+                    text = "Bharat AI Explanation",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Green
                 )
+
+                Text(
+                    text = llamaStatus,
+                    color = GreyText,
+                    fontSize = 13.sp
+                )
+
+                if (isGeneratingExplanation) {
+                    CircularProgressIndicator(
+                        color = Green,
+                        modifier = Modifier.padding(8.dp)
+                    )
+                }
+
+
+                if (llamaExplanation.isNotBlank()) {
+                    Text(
+                        text = llamaExplanation,
+                        color = DarkText,
+                        fontSize = 15.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Button(
+                    onClick = onTreatmentClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Green
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = strings.treatmentButton,
+                        color = Color.White
+                    )
+                }
             }
         }
     }
 }
+
+
+
+private fun buildDiagnosisPrompt(
+    disease: String,
+    confidence: Float,
+    symptoms: List<String>,
+    safetyNote: String,
+    language: String
+): String {
+
+    val isHealthy = disease.equals(
+        "Disease Free leaves",
+        ignoreCase = true
+    )
+
+    val symptomText = if (symptoms.isEmpty()) {
+        "No verified reference symptoms available."
+    } else {
+        symptoms.take(3).joinToString("; ")
+    }
+
+    val shortSafetyNote = safetyNote.take(120)
+
+    return """
+        <|begin_of_text|><|start_header_id|>system<|end_header_id|>
+        You are Bharat AI, an assistant for mulberry farmers.
+        Explain the diagnosis in one simple paragraph in $language.
+        Use only the supplied information. Do not invent symptoms,
+        claim reference symptoms were detected in the image,
+        or recommend unverified treatments. Include the safety note.
+        <|eot_id|><|start_header_id|>user<|end_header_id|>
+        Crop: Mulberry
+        Disease: $disease
+        Confidence: ${"%.2f".format(java.util.Locale.US, confidence * 100)}%
+        Reference symptoms: $symptomText
+        Safety: $shortSafetyNote
+        ${if (isHealthy) "Explain that no disease was detected, but this does not guarantee the whole plant is disease-free." else "Explain the predicted disease and its reference symptoms."}
+        <|eot_id|><|start_header_id|>assistant<|end_header_id|>
+    """.trimIndent()
+}
+
+
 
 
 
@@ -1409,6 +1675,7 @@ fun NavigationItem(
 private fun CropScannerScreen(
     strings: AppStrings,
     selectedImage: Bitmap?,
+    isAnalyzing: Boolean,
     onImageChange: (Bitmap?) -> Unit,
     onBack: () -> Unit,
     onAnalyze: (Bitmap) -> Unit
@@ -1553,47 +1820,21 @@ private fun CropScannerScreen(
         }
 
         selectedImage?.let { bitmap ->
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-
-                OutlinedButton(
-                    onClick = {
-                        launchCamera()
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("📷 ${strings.retakeImage}")
-                }
-
-                OutlinedButton(
-                    onClick = {
-                        galleryLauncher.launch("image/*")
-                    },
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("🖼️ ${strings.changeImage}")
-                }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-
             Button(
                 onClick = {
+                    Log.d("BharatAI_Debug", "Analyze Crop button clicked")
+                    Log.d("BharatAI_Debug", "Image size: ${bitmap.width} x ${bitmap.height}")
                     onAnalyze(bitmap)
                 },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Green
-                ),
-                shape = RoundedCornerShape(12.dp)
+                enabled = !isAnalyzing,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "🔍 ${strings.analyzeCrop}",
-                    fontWeight = FontWeight.Bold
+                    text = if (isAnalyzing) {
+                        "Analyzing..."
+                    } else {
+                        "🔍 ${strings.analyzeCrop}"
+                    }
                 )
             }
         }
@@ -1983,5 +2224,131 @@ private fun getTreatmentAdvice(
                 "Monitor the crop regularly."
             )
         }
+    }
+}
+
+
+private fun cleanLlamaResponse(raw: String): String {
+    return raw
+        // Remove complete chat headers
+        .replace(
+            Regex("<\\|start_header_id\\|>.*?<\\|end_header_id\\|>"),
+            ""
+        )
+        // Remove remaining special tokens
+        .replace(Regex("<\\|[^|]+\\|>"), "")
+        .trim()
+}
+
+@Composable
+fun LlamaLoadTestScreen(context: android.content.Context) {
+    val assistant = remember {
+        LlamaAssistant(context.applicationContext)
+    }
+
+    val scope = rememberCoroutineScope()
+    var status by remember { mutableStateOf("Model not loaded") }
+    var response by remember { mutableStateOf("") }
+    var loaded by remember { mutableStateOf(false) }
+    var generating by remember { mutableStateOf(false) }
+
+    val mainHandler = remember {
+        android.os.Handler(android.os.Looper.getMainLooper())
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text("Bharat AI - Llama Generation Test")
+
+        Spacer(Modifier.height(16.dp))
+
+        Button(
+            enabled = !loaded,
+            onClick = {
+                status = "Loading model..."
+                scope.launch {
+                    try {
+                        withContext(Dispatchers.IO) {
+                            assistant.load()
+                        }
+                        loaded = true
+                        status = "Model loaded successfully!"
+                    } catch (e: Exception) {
+                        status = "Loading error: ${e.message}"
+                    }
+                }
+            }
+        ) {
+            Text("Load Llama")
+        }
+
+        Spacer(Modifier.height(12.dp))
+
+        Button(
+            enabled = loaded && !generating,
+            onClick = {
+                generating = true
+                response = ""
+                status = "Generating response..."
+
+                val prompt = "Write one short sentence about mulberry leaves."
+
+                scope.launch(Dispatchers.IO) {
+                    try {
+                        assistant.generate(
+                            prompt,
+
+                            object : LlmCallback {
+
+                                override fun onResult(result: String) {
+                                    mainHandler.post {
+                                        response += result
+                                    }
+                                }
+
+                                override fun onStats(stats: String) {
+                                    mainHandler.post {
+                                        response = cleanLlamaResponse(response)
+                                        generating = false
+                                        status = "Generation completed!"
+                                    }
+                                }
+
+                                override fun onError(
+                                    errorCode: Int,
+                                    message: String
+                                ) {
+                                    mainHandler.post {
+                                        generating = false
+                                        status = "Generation error $errorCode: $message"
+                                    }
+                                }
+                            }
+                        )
+
+                    } catch (e: Exception) {
+                        mainHandler.post {
+                            status = "Generation error: ${e.message}"
+                            generating = false
+                        }
+                    }
+                }
+            }
+        ) {
+            Text("Generate Test Response")
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        Text("Status: $status")
+
+        Spacer(Modifier.height(12.dp))
+
+        Text("Llama response:")
+        Text(response)
     }
 }

@@ -33,3 +33,27 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+
+# Python virtual environments
+**/.venv/
+**/.venv-*/
+**/venv/
+
+# Python cache files
+**/__pycache__/
+*.pyc
+*.pyo
+
+# Android build files
+**/.gradle/
+**/build/
+**/local.properties
+
+# Large model files
+*.pte
+*.pth
+
+# IDE files
+.idea/
+.vscode/

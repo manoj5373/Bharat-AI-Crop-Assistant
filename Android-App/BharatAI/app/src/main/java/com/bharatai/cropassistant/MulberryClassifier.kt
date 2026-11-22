@@ -7,6 +7,7 @@ import org.pytorch.executorch.Module
 import org.pytorch.executorch.Tensor
 import java.io.File
 import kotlin.math.exp
+import android.util.Log
 
 data class MulberryPrediction(
     val classIndex: Int,
@@ -45,18 +46,21 @@ class MulberryClassifier(context: Context) {
     }
 
     fun predict(bitmap: Bitmap): MulberryPrediction {
+        android.util.Log.d("Classifier_Debug", "1. Starting image resize")
         val resized = Bitmap.createScaledBitmap(
             bitmap,
             IMAGE_SIZE,
             IMAGE_SIZE,
             true
         )
+        android.util.Log.d("Classifier_Debug", "2. Image resize completed")
 
         val pixels = IntArray(IMAGE_SIZE * IMAGE_SIZE)
         resized.getPixels(
             pixels, 0, IMAGE_SIZE, 0, 0,
             IMAGE_SIZE, IMAGE_SIZE
         )
+        android.util.Log.d("Classifier_Debug", "3. Pixel extraction completed")
 
         val input = FloatArray(1 * 3 * IMAGE_SIZE * IMAGE_SIZE)
 
@@ -80,9 +84,53 @@ class MulberryClassifier(context: Context) {
             input,
             longArrayOf(1, 3, IMAGE_SIZE.toLong(), IMAGE_SIZE.toLong())
         )
+        android.util.Log.d("Classifier_Debug", "4. Input tensor created")
 
-        val outputs = module.forward(EValue.from(inputTensor))
-        val logits: FloatArray = outputs[0].toTensor().dataAsFloatArray
+        var finalLogits: FloatArray? = null
+
+        for (testRun in 1..5) {
+            android.util.Log.d(
+                "BharatAI_RepeatTest",
+                "Starting inference $testRun"
+            )
+
+            android.util.Log.d(
+                "BharatAI_RepeatTest",
+                "Inference $testRun: entering module.forward()"
+            )
+
+            val outputs = module.forward(EValue.from(inputTensor))
+
+            android.util.Log.d(
+                "BharatAI_RepeatTest",
+                "Inference $testRun: returned from module.forward()"
+            )
+            val logits = outputs[0].toTensor().dataAsFloatArray
+
+            val allFinite = logits.all { it.isFinite() }
+
+            android.util.Log.d(
+                "BharatAI_RepeatTest",
+                "Inference $testRun output: ${logits.contentToString()}"
+            )
+
+            android.util.Log.d(
+                "BharatAI_RepeatTest",
+                "Inference $testRun: outputCount=${logits.size}, allFinite=$allFinite"
+            )
+
+            check(logits.size == 3)
+            check(allFinite)
+
+            finalLogits = logits
+        }
+
+        android.util.Log.d(
+            "BharatAI_RepeatTest",
+            "ALL FIVE INFERENCES COMPLETED"
+        )
+
+        val logits = finalLogits!!
 
         require(logits.size == LABELS.size) {
             "Expected 3 model outputs, received ${logits.size}"
