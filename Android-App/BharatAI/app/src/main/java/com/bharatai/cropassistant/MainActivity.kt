@@ -1,6 +1,5 @@
 package com.bharatai.cropassistant
 
-
 import androidx.exifinterface.media.ExifInterface
 import android.graphics.Matrix
 import android.os.Bundle
@@ -56,6 +55,19 @@ import kotlinx.coroutines.withContext
 import android.util.Log
 
 import org.pytorch.executorch.extension.llm.LlmCallback
+
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
+import android.location.Geocoder
+import android.os.Build
+import java.util.Locale
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 
 private const val ENABLE_LLAMA_EXPLANATION = true
 
@@ -142,10 +154,45 @@ data class AppStrings(
     val farmInformation: String,
     val villageLabel: String,
     val districtLabel: String,
+    val talukLabel: String,
     val stateLabel: String,
     val editProfile: String,
     val saveProfile: String,
-    val phoneNumberError: String
+    val phoneNumberError: String,
+
+    // Regional Advisory translations
+    val regionalAdvisoryTitle: String,
+    val regionalAdvisoryDescription: String,
+    val advisoryNavLabel: String,
+    val currentLocation: String,
+    val selectLocation: String,
+    val selectDistrict: String,
+    val selectTaluk: String,
+    val selectVillage: String,
+    val confirmLocation: String,
+    val confirmedLocation: String,
+    val farmingAdvisories: String,
+    val refresh: String,
+    val all: String,
+    val diseaseManagement: String,
+    val symptoms: String,
+    val recommendation: String,
+    val source: String,
+    val reference: String,
+    val noAdvisories: String,
+    val noCategoryAdvisories: String,
+
+    // Regional Advisory status messages
+    val locationNotDetected: String,
+    val detectingLocation: String,
+    val locationPermissionDenied: String,
+    val locationPermissionRequired: String,
+    val unableToDetectLocation: String,
+    val addressNotFound: String,
+    val noDistrictData: String,
+    val noTalukData: String,
+    val noVillageData: String,
+    val regionalEmptyDescription: String
 
 )
 
@@ -225,7 +272,41 @@ private fun translationsFor(language: String): AppStrings {
             stateLabel = "राज्य",
             editProfile = "प्रोफ़ाइल संपादित करें",
             saveProfile = "प्रोफ़ाइल सहेजें",
-            phoneNumberError = "फ़ोन नंबर में ठीक 10 अंक होने चाहिए।"
+            phoneNumberError = "फ़ोन नंबर में ठीक 10 अंक होने चाहिए।",
+
+            // Regional Advisory
+            regionalAdvisoryTitle = "क्षेत्रीय कृषि सलाह",
+            regionalAdvisoryDescription = "अपने क्षेत्र के अनुसार कृषि मार्गदर्शन प्राप्त करें।",
+            currentLocation = "मेरी वर्तमान लोकेशन का उपयोग करें",
+            selectLocation = "स्थान स्वयं चुनें",
+            selectDistrict = "ज़िला चुनें",
+            selectTaluk = "तालुक चुनें",
+            selectVillage = "गाँव चुनें",
+            confirmLocation = "स्थान की पुष्टि करें",
+            confirmedLocation = "पुष्ट स्थान",
+            farmingAdvisories = "क्षेत्रीय कृषि सलाह",
+            refresh = "रीफ्रेश करें",
+            all = "सभी",
+            diseaseManagement = "रोग प्रबंधन",
+            symptoms = "लक्षण",
+            recommendation = "सिफारिश",
+            source = "स्रोत",
+            reference = "संदर्भ",
+            noAdvisories = "अभी कोई सलाह उपलब्ध नहीं है",
+            advisoryNavLabel = "सलाह",
+            noCategoryAdvisories = "इस श्रेणी में कोई सलाह उपलब्ध नहीं है",
+            talukLabel = "तालुक",
+
+            locationNotDetected = "अभी स्थान का पता नहीं चला है",
+            detectingLocation = "आपका स्थान पता लगाया जा रहा है...",
+            locationPermissionDenied = "स्थान की अनुमति नहीं दी गई।",
+            locationPermissionRequired = "स्थान की अनुमति आवश्यक है।",
+            unableToDetectLocation = "स्थान का पता नहीं चला। कृपया पुनः प्रयास करें।",
+            addressNotFound = "निर्देशांक मिले, लेकिन पता नहीं मिला।",
+            noDistrictData = "के लिए ज़िले का डेटा उपलब्ध नहीं है",
+            noTalukData = "के लिए तालुक का डेटा उपलब्ध नहीं है",
+            noVillageData = "के लिए गाँव का डेटा उपलब्ध नहीं है",
+            regionalEmptyDescription = "आपके चुने हुए क्षेत्र के लिए सत्यापित कृषि सलाह यहाँ दिखाई देगी।"
         )
 
         "Kannada" -> AppStrings(
@@ -301,7 +382,41 @@ private fun translationsFor(language: String): AppStrings {
             stateLabel = "ರಾಜ್ಯ",
             editProfile = "ಪ್ರೊಫೈಲ್ ಸಂಪಾದಿಸಿ",
             saveProfile = "ಪ್ರೊಫೈಲ್ ಉಳಿಸಿ",
-            phoneNumberError = "ದೂರವಾಣಿ ಸಂಖ್ಯೆಯಲ್ಲಿ ನಿಖರವಾಗಿ 10 ಅಂಕಿಗಳಿರಬೇಕು."
+            phoneNumberError = "ದೂರವಾಣಿ ಸಂಖ್ಯೆಯಲ್ಲಿ ನಿಖರವಾಗಿ 10 ಅಂಕಿಗಳಿರಬೇಕು.",
+
+            // Regional Advisory
+            regionalAdvisoryTitle = "ಪ್ರಾದೇಶಿಕ ಕೃಷಿ ಸಲಹೆ",
+            regionalAdvisoryDescription = "ನಿಮ್ಮ ಪ್ರದೇಶಕ್ಕೆ ಅನುಗುಣವಾಗಿ ಕೃಷಿ ಮಾರ್ಗದರ್ಶನ ಪಡೆಯಿರಿ.",
+            currentLocation = "ನನ್ನ ಪ್ರಸ್ತುತ ಸ್ಥಳವನ್ನು ಬಳಸಿ",
+            selectLocation = "ಸ್ಥಳವನ್ನು ಕೈಯಾರೆ ಆಯ್ಕೆಮಾಡಿ",
+            selectDistrict = "ಜಿಲ್ಲೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+            selectTaluk = "ತಾಲೂಕನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+            selectVillage = "ಗ್ರಾಮವನ್ನು ಆಯ್ಕೆಮಾಡಿ",
+            confirmLocation = "ಸ್ಥಳವನ್ನು ದೃಢೀಕರಿಸಿ",
+            confirmedLocation = "ದೃಢೀಕರಿಸಿದ ಸ್ಥಳ",
+            farmingAdvisories = "ಪ್ರಾದೇಶಿಕ ಕೃಷಿ ಸಲಹೆಗಳು",
+            refresh = "ಮತ್ತೆ ಲೋಡ್ ಮಾಡಿ",
+            all = "ಎಲ್ಲಾ",
+            diseaseManagement = "ರೋಗ ನಿರ್ವಹಣೆ",
+            symptoms = "ಲಕ್ಷಣಗಳು",
+            recommendation = "ಶಿಫಾರಸು",
+            advisoryNavLabel = "ಸಲಹೆ",
+            source = "ಮೂಲ",
+            reference = "ಉಲ್ಲೇಖ",
+            noAdvisories = "ಇನ್ನೂ ಯಾವುದೇ ಸಲಹೆಗಳು ಲಭ್ಯವಿಲ್ಲ",
+            noCategoryAdvisories = "ಈ ವರ್ಗದಲ್ಲಿ ಯಾವುದೇ ಸಲಹೆಗಳಿಲ್ಲ",
+            talukLabel = "ತಾಲೂಕು",
+
+            locationNotDetected = "ಸ್ಥಳ ಇನ್ನೂ ಪತ್ತೆಯಾಗಿಲ್ಲ",
+            detectingLocation = "ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪತ್ತೆಹಚ್ಚಲಾಗುತ್ತಿದೆ...",
+            locationPermissionDenied = "ಸ್ಥಳದ ಅನುಮತಿಯನ್ನು ನಿರಾಕರಿಸಲಾಗಿದೆ.",
+            locationPermissionRequired = "ಸ್ಥಳದ ಅನುಮತಿ ಅಗತ್ಯವಿದೆ.",
+            unableToDetectLocation = "ಸ್ಥಳವನ್ನು ಪತ್ತೆಹಚ್ಚಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.",
+            addressNotFound = "ನಿರ್ದೇಶಾಂಕಗಳು ಪತ್ತೆಯಾಗಿವೆ, ಆದರೆ ವಿಳಾಸ ಸಿಗಲಿಲ್ಲ.",
+            noDistrictData = "ಇದಕ್ಕೆ ಜಿಲ್ಲೆ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ",
+            noTalukData = "ಇದಕ್ಕೆ ತಾಲೂಕು ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ",
+            noVillageData = "ಇದಕ್ಕೆ ಗ್ರಾಮ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ",
+            regionalEmptyDescription = "ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಪ್ರದೇಶದ ಪರಿಶೀಲಿತ ಕೃಷಿ ಸಲಹೆಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ."
         )
 
         "Telugu" -> AppStrings(
@@ -372,12 +487,46 @@ private fun translationsFor(language: String): AppStrings {
             farmerNameLabel = "రైతు పేరు",
             phoneNumberLabel = "ఫోన్ నంబర్",
             farmInformation = "వ్యవసాయ సమాచారం",
+            advisoryNavLabel = "సలహా",
             villageLabel = "గ్రామం",
             districtLabel = "జిల్లా",
             stateLabel = "రాష్ట్రం",
             editProfile = "ప్రొఫైల్‌ను సవరించండి",
             saveProfile = "ప్రొఫైల్‌ను సేవ్ చేయండి",
-            phoneNumberError = "ఫోన్ నంబర్‌లో ఖచ్చితంగా 10 అంకెలు ఉండాలి."
+            phoneNumberError = "ఫోన్ నంబర్‌లో ఖచ్చితంగా 10 అంకెలు ఉండాలి.",
+
+            // Regional Advisory
+            regionalAdvisoryTitle = "ప్రాంతీయ వ్యవసాయ సలహా",
+            regionalAdvisoryDescription = "మీ ప్రాంతానికి అనుగుణంగా వ్యవసాయ మార్గదర్శకత్వం పొందండి.",
+            currentLocation = "నా ప్రస్తుత స్థానాన్ని ఉపయోగించండి",
+            selectLocation = "స్థానాన్ని మాన్యువల్‌గా ఎంచుకోండి",
+            selectDistrict = "జిల్లాను ఎంచుకోండి",
+            selectTaluk = "తాలూకాను ఎంచుకోండి",
+            selectVillage = "గ్రామాన్ని ఎంచుకోండి",
+            confirmLocation = "స్థానాన్ని నిర్ధారించండి",
+            confirmedLocation = "నిర్ధారించిన స్థానం",
+            farmingAdvisories = "ప్రాంతీయ వ్యవసాయ సలహాలు",
+            refresh = "మళ్లీ లోడ్ చేయండి",
+            all = "అన్నీ",
+            diseaseManagement = "వ్యాధి నిర్వహణ",
+            symptoms = "లక్షణాలు",
+            recommendation = "సిఫార్సు",
+            source = "మూలం",
+            reference = "సూచన",
+            noAdvisories = "ప్రస్తుతం ఎలాంటి సలహాలు అందుబాటులో లేవు",
+            noCategoryAdvisories = "ఈ వర్గంలో ఎలాంటి సలహాలు లేవు",
+            talukLabel = "తాలూకా",
+
+            locationNotDetected = "స్థానం ఇంకా గుర్తించబడలేదు",
+            detectingLocation = "మీ స్థానాన్ని గుర్తిస్తోంది...",
+            locationPermissionDenied = "స్థాన అనుమతి నిరాకరించబడింది.",
+            locationPermissionRequired = "స్థాన అనుమతి అవసరం.",
+            unableToDetectLocation = "స్థానాన్ని గుర్తించలేకపోయాము. దయచేసి మళ్లీ ప్రయత్నించండి.",
+            addressNotFound = "కోఆర్డినేట్లు గుర్తించబడ్డాయి, కానీ చిరునామా కనుగొనబడలేదు.",
+            noDistrictData = "దీనికి జిల్లా సమాచారం అందుబాటులో లేదు",
+            noTalukData = "దీనికి తాలూకా సమాచారం అందుబాటులో లేదు",
+            noVillageData = "దీనికి గ్రామ సమాచారం అందుబాటులో లేదు",
+            regionalEmptyDescription = "మీరు ఎంచుకున్న ప్రాంతానికి సంబంధించిన ధృవీకరించిన వ్యవసాయ సలహాలు ఇక్కడ కనిపిస్తాయి."
         )
 
         else -> AppStrings(
@@ -453,7 +602,40 @@ private fun translationsFor(language: String): AppStrings {
             stateLabel = "State",
             editProfile = "Edit Profile",
             saveProfile = "Save Profile",
-            phoneNumberError = "Phone number must contain exactly 10 digits."
+            phoneNumberError = "Phone number must contain exactly 10 digits.",
+            // Regional Advisory
+            regionalAdvisoryTitle = "Regional Advisory",
+            regionalAdvisoryDescription = "Get farming guidance based on your region.",
+            currentLocation = "Use My Current Location",
+            selectLocation = "Select Location Manually",
+            selectDistrict = "Select District",
+            selectTaluk = "Select Taluk",
+            selectVillage = "Select Village",
+            confirmLocation = "Confirm Location",
+            confirmedLocation = "Confirmed Location",
+            farmingAdvisories = "Regional Farming Advisories",
+            refresh = "Refresh",
+            all = "All",
+            diseaseManagement = "Disease Management",
+            symptoms = "Symptoms",
+            recommendation = "Recommendation",
+            advisoryNavLabel = "Advisory",
+            source = "Source",
+            reference = "Reference",
+            noAdvisories = "No advisories available yet",
+            noCategoryAdvisories = "No advisories in this category",
+            talukLabel = "Taluk",
+
+            locationNotDetected = "Location not detected yet",
+            detectingLocation = "Detecting your location...",
+            locationPermissionDenied = "Location permission denied.",
+            locationPermissionRequired = "Location permission is required.",
+            unableToDetectLocation = "Unable to detect location. Please try again.",
+            addressNotFound = "Coordinates detected, but address not found.",
+            noDistrictData = "No district data available for",
+            noTalukData = "No taluk data available for",
+            noVillageData = "No village data available for",
+            regionalEmptyDescription = "Verified farming recommendations for your selected region will appear here."
         )
     }
 }
@@ -462,7 +644,6 @@ private fun translationsFor(language: String): AppStrings {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
 
         setContent {
             BharatAITheme {
@@ -526,6 +707,19 @@ fun BharatAIHomeScreen() {
         mutableStateOf<MulberryPrediction?>(null)
     }
 
+    // Severity classifier variables
+    var severityClassifier by remember {
+        mutableStateOf<MulberrySeverityClassifier?>(null)
+    }
+
+    var severityPrediction by remember {
+        mutableStateOf<SeverityPrediction?>(null)
+    }
+
+    var severityError by remember {
+        mutableStateOf<String?>(null)
+    }
+
     var isAnalyzing by remember {
         mutableStateOf(false)
     }
@@ -543,6 +737,8 @@ fun BharatAIHomeScreen() {
                 strings = strings,
                 selectedLanguage = selectedLanguage,
                 prediction = prediction,
+                severityPrediction = severityPrediction,
+                severityError = severityError,
                 isAnalyzing = isAnalyzing,
                 analysisError = analysisError,
                 onLanguageChange = { language ->
@@ -567,6 +763,20 @@ fun BharatAIHomeScreen() {
             onBack = {
                 selectedTab = "Results"
             }
+        )
+        return
+    }
+
+    if (selectedTab == "Advisory") {
+        RegionalAdvisoryScreen(
+            strings = strings,
+            languageCode = when (selectedLanguage) {
+                "Hindi" -> "hi"
+                "Kannada" -> "kn"
+                "Telugu" -> "te"
+                else -> "en"
+            },
+            onBack = { selectedTab = "Home" }
         )
         return
     }
@@ -620,59 +830,143 @@ fun BharatAIHomeScreen() {
                 selectedTab = "Home"
             },
 
+
             onAnalyze = { image ->
 
                 if (isAnalyzing) {
-                    Log.w("BharatAI_Debug", "Analysis already running. Ignoring duplicate request.")
+                    Log.w(
+                        "BharatAI_Debug",
+                        "Analysis already running. Ignoring duplicate request."
+                    )
                 } else {
 
-                    Log.d("BharatAI_Debug", "onAnalyze callback started")
+                    Log.d("BharatAI_Debug", "Starting crop analysis")
 
                     selectedCropImage = image
                     isAnalyzing = true
+
+                    // Reset previous results
                     analysisError = null
+                    severityError = null
                     prediction = null
+                    severityPrediction = null
 
-                val existingClassifier = classifier
+                    // Keep existing loaded classifiers
+                    val existingClassifier = classifier
+                    val existingSeverityClassifier = severityClassifier
 
-                scope.launch {
-                    try {
-                        Log.d("BharatAI_Debug", "Starting classifier")
+                    scope.launch {
+                        try {
 
-                        val (loadedClassifier, result) =
-                            withContext(Dispatchers.Default) {
-                                val activeClassifier =
-                                    existingClassifier ?: MulberryClassifier(context)
+                            // --------------------------------
+                            // 1. Existing disease classification
+                            // --------------------------------
 
-                                Log.d("BharatAI_Debug", "Calling predict()")
+                            Log.d("BharatAI_Debug", "Starting disease classifier")
 
-                                activeClassifier to activeClassifier.predict(image)
+                            val (loadedClassifier, diseaseResult) =
+                                withContext(Dispatchers.Default) {
+
+                                    val activeClassifier =
+                                        existingClassifier ?: MulberryClassifier(context)
+
+                                    val result = activeClassifier.predict(image)
+
+                                    activeClassifier to result
+                                }
+
+                            classifier = loadedClassifier
+                            prediction = diseaseResult
+
+                            Log.d(
+                                "BharatAI_Debug",
+                                "Disease prediction: ${diseaseResult.diseaseName}"
+                            )
+
+                            // --------------------------------
+                            // 2. New severity classification
+                            // --------------------------------
+
+                            try {
+
+                                Log.d("SEVERITY_TEST", "Starting severity analysis")
+
+                                val (loadedSeverityClassifier, severityResult) =
+                                    withContext(Dispatchers.Default) {
+
+                                        val activeSeverityClassifier =
+                                            existingSeverityClassifier
+                                                ?: MulberrySeverityClassifier(context)
+
+                                        val severityInput =
+                                            MulberrySeverityPreprocessor.preprocess(image)
+
+                                        val result =
+                                            activeSeverityClassifier.predictPreprocessed(
+                                                severityInput
+                                            )
+
+                                        activeSeverityClassifier to result
+                                    }
+
+                                severityClassifier = loadedSeverityClassifier
+                                severityPrediction = severityResult
+                                severityError = null
+
+                                Log.d(
+                                    "SEVERITY_TEST",
+                                    "Severity prediction: ${severityResult.severityName}"
+                                )
+
+                            } catch (severityException: Exception) {
+
+                                Log.e(
+                                    "SEVERITY_TEST",
+                                    "Severity analysis failed",
+                                    severityException
+                                )
+
+                                severityPrediction = null
+
+                                severityError =
+                                    severityException.localizedMessage
+                                        ?: "Unable to assess severity."
                             }
 
-                        Log.d(
-                            "BharatAI_Debug",
-                            "Prediction completed: ${result.diseaseName}"
-                        )
+                            // --------------------------------
+                            // 3. Navigate to results
+                            // --------------------------------
 
-                        classifier = loadedClassifier
-                        prediction = result
-                        selectedTab = "Results"
+                            selectedTab = "Results"
 
-                    } catch (e: Exception) {
-                        Log.e("BharatAI_Debug", "Classification failed", e)
+                        } catch (e: Exception) {
 
-                        analysisError =
-                            e.localizedMessage ?: "Unable to analyze this image."
+                            // Disease classification failure
+                            Log.e(
+                                "BharatAI_Debug",
+                                "Disease classification failed",
+                                e
+                            )
 
-                        selectedTab = "Results"
+                            analysisError =
+                                e.localizedMessage
+                                    ?: "Unable to analyze this image."
 
-                    } finally {
-                        isAnalyzing = false
-                        Log.d("BharatAI_Debug", "Analysis finished")
+                            selectedTab = "Results"
+
+                        } finally {
+
+                            isAnalyzing = false
+
+                            Log.d(
+                                "BharatAI_Debug",
+                                "Analysis finished"
+                            )
+                        }
                     }
                 }
-                }
             }
+
         )
         return
     }
@@ -865,13 +1159,13 @@ fun BharatAIHomeScreen() {
                 }
             }
 
-            // AI Assistant Card
+            // Regional Advisory Card
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        selectedTab = "Assistant"
-                        message = strings.assistantSelected
+                        selectedTab = "Advisory"
+                        message = ""
                     },
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White)
@@ -880,20 +1174,20 @@ fun BharatAIHomeScreen() {
                     modifier = Modifier.padding(18.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("🤖", fontSize = 35.sp)
+                    Text("🌾", fontSize = 35.sp)
 
                     Spacer(modifier = Modifier.width(14.dp))
 
                     Column {
                         Text(
-                            text = strings.assistantTitle,
+                            text = strings.regionalAdvisoryTitle,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.Bold,
                             color = Green
                         )
 
                         Text(
-                            text = strings.assistantSubtitle,
+                            text = strings.regionalAdvisoryDescription,
                             fontSize = 12.sp,
                             color = GreyText
                         )
@@ -971,12 +1265,12 @@ fun BharatAIHomeScreen() {
             }
 
             NavigationItem(
-                emoji = "🤖",
-                title = strings.assistant,
-                selected = selectedTab == "Assistant"
+                emoji = "🌾",
+                title = strings.advisoryNavLabel,
+                selected = selectedTab == "Advisory"
             ) {
-                selectedTab = "Assistant"
-                message = strings.assistantSelected
+                selectedTab = "Advisory"
+                message = ""
             }
 
             NavigationItem(
@@ -1008,11 +1302,13 @@ private fun DiagnosisResultsScreen(
     selectedLanguage: String,
     onLanguageChange: (String) -> Unit,
     prediction: MulberryPrediction?,
+    severityPrediction: SeverityPrediction?,
+    severityError: String?,
     isAnalyzing: Boolean,
     analysisError: String?,
     onTreatmentClick: () -> Unit,
     onBack: () -> Unit
-) {
+){
     val appContext = androidx.compose.ui.platform.LocalContext.current
 
     val llamaAssistant = remember(appContext) {
@@ -1076,28 +1372,16 @@ private fun DiagnosisResultsScreen(
             ?: "Consult a local sericulture or agriculture expert."
 
 
+        val prompt = buildDiagnosisPrompt(
+                disease = currentPrediction.diseaseName,
+        confidence = currentPrediction.confidence,
+        symptoms = symptoms,
+        safetyNote = safety,
+        language = selectedLanguage
+        )
 
-
-        val prompt = """
-    <|start_header_id|>system<|end_header_id|>
-
-    You are Bharat AI, an assistant for mulberry farmers.
-    Use simple English.
-    The disease name provided is a classifier label,
-    NOT a dataset name.
-    Explain the predicted condition directly.
-    Explain that confidence is not a guarantee.
-    Give one simple and safe recommendation.
-    Do not discuss datasets, AI models, or training data.
-    Do not invent medicines or treatments.
-    Use exactly 2 short sentences and fewer than 35 words.
-    <|eot_id|><|start_header_id|>user<|end_header_id|>
-
-    Classifier result: ${currentPrediction.diseaseName}
-    Confidence: ${(currentPrediction.confidence * 100).toInt()}%.
-    Explain this result to the farmer.
-    <|eot_id|><|start_header_id|>assistant<|end_header_id|>
-""".trimIndent()
+        Log.d("LLAMA_DEBUG", "Selected language: $selectedLanguage")
+        Log.d("LLAMA_DEBUG", "Prompt sent to Llama:\n$prompt")
 
 
         llamaExplanation = ""
@@ -1381,6 +1665,125 @@ private fun DiagnosisResultsScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+
+// Severity Assessment
+                Text(
+                    text = "Severity Assessment",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Green
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                when {
+                    isAnalyzing -> {
+                        Text(
+                            text = "Assessing leaf severity...",
+                            color = GreyText
+                        )
+                    }
+
+                    severityPrediction != null -> {
+                        val severity = severityPrediction
+
+                        Text(
+                            text = "Severity Level: ${severity.severityName}",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            color = DarkText
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Text(
+                            text = "Model score: ${
+                                "%.2f".format(
+                                    java.util.Locale.US,
+                                    severity.confidence * 100
+                                )
+                            }%",
+                            color = DarkText
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        Text(
+                            text = "Class scores",
+                            fontWeight = FontWeight.SemiBold,
+                            color = DarkText
+                        )
+
+                        val severityLabels = listOf(
+                            "Healthy",
+                            "Mild",
+                            "Moderate",
+                            "Severe"
+                        )
+
+                        severityLabels.forEachIndexed { index, label ->
+
+                            val score = severity.scores[index]
+
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 5.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(label, color = DarkText)
+
+                                    Text(
+                                        text = "${
+                                            "%.2f".format(
+                                                java.util.Locale.US,
+                                                score * 100
+                                            )
+                                        }%",
+                                        color = DarkText
+                                    )
+                                }
+
+                                LinearProgressIndicator(
+                                    progress = { score.coerceIn(0f, 1f) },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(7.dp),
+                                    color = Green,
+                                    trackColor = LightGreen
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Text(
+                            text = "These are model scores, not calibrated diagnostic probabilities. Please confirm the assessment with an agriculture expert.",
+                            fontSize = 12.sp,
+                            color = GreyText
+                        )
+                    }
+
+                    severityError != null -> {
+                        Text(
+                            text = "Severity assessment unavailable: $severityError",
+                            color = Color(0xFFB45309)
+                        )
+                    }
+
+                    else -> {
+                        Text(
+                            text = "Severity assessment is not available.",
+                            color = GreyText
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
                 Text(
                     text = "Bharat AI Explanation",
                     fontWeight = FontWeight.Bold,
@@ -1440,40 +1843,46 @@ private fun buildDiagnosisPrompt(
     language: String
 ): String {
 
-    val isHealthy = disease.equals(
-        "Disease Free leaves",
-        ignoreCase = true
-    )
-
-    val symptomText = if (symptoms.isEmpty()) {
-        "No verified reference symptoms available."
-    } else {
-        symptoms.take(3).joinToString("; ")
+    val lang = when (language.trim().lowercase()) {
+        "hindi" -> "Hindi"
+        "kannada" -> "Kannada"
+        "telugu" -> "Telugu"
+        else -> "English"
     }
 
-    val shortSafetyNote = safetyNote.take(120)
+    val symptomText = if (symptoms.isEmpty()) {
+        "Unavailable"
+    } else {
+        symptoms.take(2).joinToString("; ")
+    }
+
+    val languageInstruction = when (lang) {
+        "Hindi" -> "आपको पूरा उत्तर केवल हिंदी भाषा में देवनागरी लिपि में देना है। अंग्रेज़ी में उत्तर न दें।"
+        "Kannada" -> "ನೀವು ಸಂಪೂರ್ಣ ಉತ್ತರವನ್ನು ಕನ್ನಡ ಭಾಷೆಯಲ್ಲಿ ಮಾತ್ರ ನೀಡಬೇಕು. ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಉತ್ತರಿಸಬೇಡಿ."
+        "Telugu" -> "మీరు పూర్తి సమాధానాన్ని తెలుగులో మాత్రమే ఇవ్వాలి. ఆంగ్లంలో ಉತ್ತರించకండి."
+        else -> "Write the entire response in English only."
+    }
+
+
+
 
     return """
-        <|begin_of_text|><|start_header_id|>system<|end_header_id|>
-        You are Bharat AI, an assistant for mulberry farmers.
-        Explain the diagnosis in one simple paragraph in $language.
-        Use only the supplied information. Do not invent symptoms,
-        claim reference symptoms were detected in the image,
-        or recommend unverified treatments. Include the safety note.
-        <|eot_id|><|start_header_id|>user<|end_header_id|>
-        Crop: Mulberry
-        Disease: $disease
-        Confidence: ${"%.2f".format(java.util.Locale.US, confidence * 100)}%
-        Reference symptoms: $symptomText
-        Safety: $shortSafetyNote
-        ${if (isHealthy) "Explain that no disease was detected, but this does not guarantee the whole plant is disease-free." else "Explain the predicted disease and its reference symptoms."}
-        <|eot_id|><|start_header_id|>assistant<|end_header_id|>
-    """.trimIndent()
+<|start_header_id|>system<|end_header_id|>
+You explain mulberry leaf diagnosis results.
+Use simple English.
+Do not repeat the result or confidence.
+Do not invent facts, causes or treatments.
+Write exactly two short sentences.
+Explain only what the detected result means.
+<|eot_id|><|start_header_id|>user<|end_header_id|>
+Detected result: $disease
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+""".trimIndent()
+
+
+
+
 }
-
-
-
-
 
 @Composable
 private fun TreatmentScreen(
@@ -2352,3 +2761,703 @@ fun LlamaLoadTestScreen(context: android.content.Context) {
         Text(response)
     }
 }
+
+@Composable
+private fun RegionalAdvisoryScreen(
+    strings: AppStrings,
+    languageCode: String,
+    onBack: () -> Unit
+){
+    val context = LocalContext.current
+    val locationDatabase = remember {
+        LocationDatabaseHelper(context)
+    }
+
+    val advisoryDatabase = remember {
+        AdvisoryDatabaseHelper(context)
+    }
+
+    var confirmedLocation by remember {
+        mutableStateOf("")
+    }
+
+    var advisoryItems by remember {
+        mutableStateOf<List<AdvisoryItem>>(emptyList())
+    }
+
+    var selectedAdvisoryCategory by remember {
+        mutableStateOf("All")
+    }
+
+    val filteredAdvisories = advisoryItems.filter { advisory ->
+        selectedAdvisoryCategory == "All" ||
+                advisory.category == selectedAdvisoryCategory
+    }
+
+    val indianStates = remember {
+        locationDatabase.getStates()
+    }
+    var selectedTaluk by remember {
+        mutableStateOf("")
+    }
+
+    var talukDropdownExpanded by remember {
+        mutableStateOf(false)
+    }
+
+    var villages by remember {
+        mutableStateOf<List<Pair<Int, String>>>(emptyList())
+    }
+
+    var selectedVillage by remember { mutableStateOf("") }
+    var selectedVillageCode by remember { mutableStateOf<Int?>(null) }
+    var villageDropdownExpanded by remember { mutableStateOf(false) }
+
+    val locationClient = remember {
+        LocationServices.getFusedLocationProviderClient(context)
+    }
+
+    var locationMessage by remember {
+        mutableStateOf(strings.locationNotDetected)
+    }
+
+    var isGettingLocation by remember {
+        mutableStateOf(false)
+    }
+
+    var selectedState by remember {
+        mutableStateOf("")
+    }
+    var selectedStateCode by remember {
+        mutableStateOf<Int?>(null)
+    }
+
+    var districts by remember {
+        mutableStateOf<List<Pair<Int, String>>>(emptyList())
+    }
+
+    var selectedDistrictCode by remember {
+        mutableStateOf<Int?>(null)
+    }
+
+    var subDistricts by remember {
+        mutableStateOf<List<Pair<Int, String>>>(emptyList())
+    }
+
+    var selectedSubDistrictCode by remember {
+        mutableStateOf<Int?>(null)
+    }
+
+    var stateDropdownExpanded by remember {
+        mutableStateOf(false)
+    }
+
+    var selectedDistrict by remember {
+        mutableStateOf("")
+    }
+
+    var districtDropdownExpanded by remember {
+        mutableStateOf(false)
+    }
+
+    fun fetchCurrentLocation() {
+        isGettingLocation = true
+        locationMessage = strings.detectingLocation
+
+        val cancellationToken = CancellationTokenSource()
+
+        try {
+            locationClient.getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                cancellationToken.token
+            ).addOnSuccessListener { location ->
+
+                isGettingLocation = false
+
+                if (location != null) {
+                    val geocoder = Geocoder(context, Locale.getDefault())
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        geocoder.getFromLocation(
+                            location.latitude,
+                            location.longitude,
+                            1
+                        ) { addresses ->
+
+                            locationMessage = if (addresses.isNotEmpty()) {
+                                val address = addresses[0]
+
+                                """
+                Village: ${address.subLocality ?: address.locality ?: "Not available"}
+                Taluk: ${address.subAdminArea ?: "Not available"}
+                District: ${address.subAdminArea ?: "Not available"}
+                State: ${address.adminArea ?: "Not available"}
+                """
+                            } else {
+                                strings.addressNotFound
+                            }
+                        }
+                    } else {
+                        @Suppress("DEPRECATION")
+                        val addresses = geocoder.getFromLocation(
+                            location.latitude,
+                            location.longitude,
+                            1
+                        )
+
+                        locationMessage = if (!addresses.isNullOrEmpty()) {
+                            val address = addresses[0]
+
+                            """
+            Village: ${address.subLocality ?: address.locality ?: "Not available"}
+            Taluk: ${address.subAdminArea ?: "Not available"}
+            District: ${address.subAdminArea ?: "Not available"}
+            State: ${address.adminArea ?: "Not available"}
+            """
+                        } else {
+                            strings.addressNotFound
+                        }
+                    }
+                } else {
+                    locationMessage = strings.unableToDetectLocation
+                }
+
+            }.addOnFailureListener { error ->
+
+                isGettingLocation = false
+                locationMessage = "Location error: ${error.localizedMessage}"
+            }
+
+        } catch (e: SecurityException) {
+            isGettingLocation = false
+            locationMessage = strings.locationPermissionRequired
+        }
+    }
+
+    val locationPermissionLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+
+            val granted =
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+                        permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+
+            if (granted) {
+                fetchCurrentLocation()
+            } else {
+                locationMessage = strings.locationPermissionDenied
+            }
+        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
+            .verticalScroll(rememberScrollState())
+            .padding(20.dp)
+    ) {
+        TextButton(onClick = onBack) {
+            Text(strings.backHome, color = Green)
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "🌾 ${strings.regionalAdvisoryTitle}",
+            fontSize = 25.sp,
+            fontWeight = FontWeight.Bold,
+            color = Green
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = strings.regionalAdvisoryDescription,
+            color = GreyText
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                val fineGranted = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+
+                val coarseGranted = ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+
+                if (fineGranted || coarseGranted) {
+                    fetchCurrentLocation()
+                } else {
+                    locationPermissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Green
+            )
+        ) {
+            Text("📍 ${strings.currentLocation}")
+        }
+        Text(
+            text = locationMessage,
+            color = GreyText,
+            modifier = Modifier.padding(top = 12.dp)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = {
+                confirmedLocation = ""
+                stateDropdownExpanded = true
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = if (selectedState.isEmpty()) {
+                    strings.selectLocation
+                } else {
+                    "${strings.stateLabel}: $selectedState"
+                }
+            )
+        }
+
+        DropdownMenu(
+            expanded = stateDropdownExpanded,
+            onDismissRequest = {
+                stateDropdownExpanded = false
+            },
+            modifier = Modifier.heightIn(max = 400.dp)
+        ) {
+            indianStates.forEach { state ->
+                DropdownMenuItem(
+                    text = {
+                        Text(state.second)
+                    },
+                    onClick = {
+                        selectedStateCode = state.first
+                        selectedState = state.second
+
+                        districts = locationDatabase.getDistricts(state.first)
+                        subDistricts = emptyList()
+                        selectedSubDistrictCode = null
+                        villages = emptyList()
+                        selectedVillage = ""
+                        selectedVillageCode = null
+                        advisoryItems = emptyList()
+                        confirmedLocation = ""
+
+                        selectedDistrict = ""
+                        selectedDistrictCode = null
+                        selectedTaluk = ""
+
+                        districtDropdownExpanded = false
+                        talukDropdownExpanded = false
+
+                        districtDropdownExpanded = false
+                        talukDropdownExpanded = false
+                        stateDropdownExpanded = false
+                    }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = {
+                confirmedLocation = ""
+                districtDropdownExpanded = true
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = districts.isNotEmpty()
+        ) {
+            Text(
+                text = if (selectedDistrict.isEmpty()) {
+                    strings.selectDistrict
+                } else {
+                    "${strings.districtLabel}: $selectedDistrict"
+                }
+            )
+        }
+
+        DropdownMenu(
+            expanded = districtDropdownExpanded,
+            onDismissRequest = {
+                districtDropdownExpanded = false
+            },
+            modifier = Modifier.heightIn(max = 400.dp)
+        ) {
+            districts.forEach { district ->
+                DropdownMenuItem(
+                    text = {
+                        Text(district.second)
+                    },
+                    onClick = {
+                        selectedDistrictCode = district.first
+                        selectedDistrict = district.second
+
+                        subDistricts = locationDatabase.getSubDistricts(
+                            selectedStateCode!!,
+                            district.first
+                        )
+
+                        selectedSubDistrictCode = null
+
+                        selectedTaluk = ""
+                        villages = emptyList()
+                        selectedVillage = ""
+                        selectedVillageCode = null
+                        advisoryItems = emptyList()
+                        confirmedLocation = ""
+                        talukDropdownExpanded = false
+                        districtDropdownExpanded = false
+                    }
+                )
+            }
+        }
+
+        if (
+            selectedState.isNotEmpty() &&
+            districts.isEmpty()
+        ) {
+            Text(
+                text = "${strings.noDistrictData} $selectedState.",
+                color = GreyText,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = {
+                confirmedLocation = ""
+                talukDropdownExpanded = true
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = subDistricts.isNotEmpty()
+        ) {
+            Text(
+                text = if (selectedTaluk.isEmpty()) {
+                    strings.selectTaluk
+                } else {
+                    "${strings.talukLabel}: $selectedTaluk"
+                }
+            )
+        }
+
+        DropdownMenu(
+            expanded = talukDropdownExpanded,
+            onDismissRequest = {
+                talukDropdownExpanded = false
+            },
+            modifier = Modifier.heightIn(max = 400.dp)
+        ) {
+            subDistricts.forEach { subDistrict ->
+                DropdownMenuItem(
+                    text = {
+                        Text(subDistrict.second)
+                    },
+                    onClick = {
+                        selectedSubDistrictCode = subDistrict.first
+                        selectedTaluk = subDistrict.second
+
+                        val stateCode = selectedStateCode
+                        val districtCode = selectedDistrictCode
+
+                        if (stateCode != null && districtCode != null) {
+                            villages = locationDatabase.getVillages(
+                                stateCode,
+                                districtCode,
+                                subDistrict.first
+                            )
+                        }
+
+                        selectedVillage = ""
+                        selectedVillageCode = null
+                        villageDropdownExpanded = false
+                        talukDropdownExpanded = false
+                    }
+                )
+            }
+        }
+
+        if (
+            selectedDistrict.isNotEmpty() &&
+            subDistricts.isEmpty()
+        ) {
+            Text(
+                text = "${strings.noTalukData} $selectedDistrict.",
+                color = GreyText,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = {
+                confirmedLocation = ""
+                villageDropdownExpanded = true
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = villages.isNotEmpty()
+        ) {
+            Text(
+                text = if (selectedVillage.isEmpty()) {
+                    strings.selectVillage
+                } else {
+                    "${strings.villageLabel}: $selectedVillage"
+                }
+            )
+        }
+
+        DropdownMenu(
+            expanded = villageDropdownExpanded,
+            onDismissRequest = {
+                villageDropdownExpanded = false
+            },
+            modifier = Modifier.heightIn(max = 400.dp)
+        ) {
+            villages.forEach { village ->
+                DropdownMenuItem(
+                    text = { Text(village.second) },
+                    onClick = {
+                        selectedVillageCode = village.first
+                        selectedVillage = village.second
+                        villageDropdownExpanded = false
+                    }
+                )
+            }
+        }
+
+        if (
+            selectedTaluk.isNotEmpty() &&
+            villages.isEmpty()
+        ) {
+            Text(
+                text = "${strings.noVillageData} $selectedTaluk.",
+                color = GreyText,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Button(
+            onClick = {
+                confirmedLocation = "$selectedVillage, $selectedTaluk, $selectedDistrict, $selectedState"
+
+                val stateCode = selectedStateCode
+                val districtCode = selectedDistrictCode
+
+                advisoryItems = advisoryDatabase.getVerifiedAdvisories(
+                    stateCode = stateCode,
+                    districtCode = districtCode,
+                    languageCode = languageCode
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = selectedState.isNotEmpty() &&
+                    selectedDistrict.isNotEmpty() &&
+                    selectedTaluk.isNotEmpty() &&
+                    selectedVillage.isNotEmpty()
+        ) {
+            Text(strings.confirmLocation)
+        }
+        if (confirmedLocation.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = 	strings.confirmedLocation,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(text = confirmedLocation)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = 	strings.farmingAdvisories,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+
+            if (confirmedLocation.isNotEmpty()) {
+                TextButton(
+                    onClick = {
+                        advisoryItems = advisoryDatabase.getVerifiedAdvisories(
+                            stateCode = selectedStateCode,
+                            districtCode = selectedDistrictCode
+                        )
+                    }
+                ) {
+                    Text("↻ ${strings.refresh}", color = Green)
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        if (confirmedLocation.isNotEmpty()) {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+
+                Button(
+                    onClick = {
+                        selectedAdvisoryCategory = "All"
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedAdvisoryCategory == "All")
+                            Green else Color.LightGray
+                    )
+                ) {
+                    Text(strings.all)
+                }
+
+                Button(
+                    onClick = {
+                        selectedAdvisoryCategory = "Disease Management"
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (selectedAdvisoryCategory == "Disease Management")
+                            Green else Color.LightGray
+                    )
+                ) {
+                    Text(strings.diseaseManagement)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        if (confirmedLocation.isNotEmpty()) {
+
+            if (filteredAdvisories.isEmpty()) {
+
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = if (selectedAdvisoryCategory == "All")
+                                strings.noAdvisories
+                            else
+                                strings.noCategoryAdvisories,
+                            fontWeight = FontWeight.Bold
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Text(
+                            text = strings.regionalEmptyDescription
+                        )
+                    }
+                }
+
+            } else {
+
+                filteredAdvisories.forEach { advisory ->
+
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            Text(
+                                text = advisory.category.uppercase(),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = Green
+                            )
+
+                            Text(
+                                text = advisory.title,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 17.sp
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            Text(text = advisory.description)
+
+                            if (!advisory.symptoms.isNullOrBlank()) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "${strings.symptoms}: ${advisory.symptoms}"
+                                )
+                            }
+
+                            if (!advisory.recommendation.isNullOrBlank()) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "${strings.recommendation}: ${advisory.recommendation}"
+                                )
+                            }
+
+                            if (!advisory.sourceOrganization.isNullOrBlank()) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text(
+                                    text = "${strings.source}: ${advisory.sourceOrganization}",
+                                    fontSize = 12.sp,
+                                    color = Color.LightGray
+                                )
+                            }
+
+                            if (!advisory.sourceTitle.isNullOrBlank()) {
+                                Text(
+                                    text = "${strings.reference}: ${advisory.sourceTitle}",
+                                    fontSize = 12.sp,
+                                    color = Color.LightGray
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+}
+data class LocationData(
+    val state: String,
+    val districts: Map<String, Map<String, List<String>>>
+)

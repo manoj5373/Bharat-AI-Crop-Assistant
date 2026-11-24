@@ -58,4 +58,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
 
     implementation("org.pytorch:executorch-android:1.5.1")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 }

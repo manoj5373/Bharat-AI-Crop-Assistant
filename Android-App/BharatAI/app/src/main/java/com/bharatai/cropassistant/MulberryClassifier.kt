@@ -29,11 +29,9 @@ class MulberryClassifier(context: Context) {
         )
     }
 
-    private val module: Module
+    private val modelFile = File(context.filesDir, MODEL_FILE)
 
     init {
-        val modelFile = File(context.filesDir, MODEL_FILE)
-
         if (!modelFile.exists()) {
             context.assets.open(MODEL_FILE).use { input ->
                 modelFile.outputStream().use { output ->
@@ -41,31 +39,36 @@ class MulberryClassifier(context: Context) {
                 }
             }
         }
-
-        module = Module.load(modelFile.absolutePath)
     }
 
+
     fun predict(bitmap: Bitmap): MulberryPrediction {
-        android.util.Log.d("Classifier_Debug", "1. Starting image resize")
+
+        Log.d("Classifier_Debug", "1. Starting image resize")
+
         val resized = Bitmap.createScaledBitmap(
             bitmap,
             IMAGE_SIZE,
             IMAGE_SIZE,
             true
         )
-        android.util.Log.d("Classifier_Debug", "2. Image resize completed")
+
+        Log.d("Classifier_Debug", "2. Image resize completed")
 
         val pixels = IntArray(IMAGE_SIZE * IMAGE_SIZE)
+
         resized.getPixels(
             pixels, 0, IMAGE_SIZE, 0, 0,
             IMAGE_SIZE, IMAGE_SIZE
         )
-        android.util.Log.d("Classifier_Debug", "3. Pixel extraction completed")
 
-        val input = FloatArray(1 * 3 * IMAGE_SIZE * IMAGE_SIZE)
+        Log.d("Classifier_Debug", "3. Pixel extraction completed")
+
+        val input = FloatArray(3 * IMAGE_SIZE * IMAGE_SIZE)
 
         val mean = floatArrayOf(0.485f, 0.456f, 0.406f)
         val std = floatArrayOf(0.229f, 0.224f, 0.225f)
+
         val planeSize = IMAGE_SIZE * IMAGE_SIZE
 
         for (i in pixels.indices) {
@@ -84,62 +87,46 @@ class MulberryClassifier(context: Context) {
             input,
             longArrayOf(1, 3, IMAGE_SIZE.toLong(), IMAGE_SIZE.toLong())
         )
-        android.util.Log.d("Classifier_Debug", "4. Input tensor created")
 
-        var finalLogits: FloatArray? = null
+        Log.d("Classifier_Debug", "4. Input tensor created")
 
-        for (testRun in 1..5) {
-            android.util.Log.d(
-                "BharatAI_RepeatTest",
-                "Starting inference $testRun"
-            )
+        // Load a fresh module for this prediction.
+        val logits = Module.load(modelFile.absolutePath).use { activeModule ->
 
-            android.util.Log.d(
-                "BharatAI_RepeatTest",
-                "Inference $testRun: entering module.forward()"
-            )
+            Log.d("Classifier_Debug", "5. Fresh module loaded")
 
-            val outputs = module.forward(EValue.from(inputTensor))
+            val outputs = activeModule.forward(EValue.from(inputTensor))
 
-            android.util.Log.d(
-                "BharatAI_RepeatTest",
-                "Inference $testRun: returned from module.forward()"
-            )
-            val logits = outputs[0].toTensor().dataAsFloatArray
+            Log.d("Classifier_Debug", "6. module.forward() returned")
 
-            val allFinite = logits.all { it.isFinite() }
-
-            android.util.Log.d(
-                "BharatAI_RepeatTest",
-                "Inference $testRun output: ${logits.contentToString()}"
-            )
-
-            android.util.Log.d(
-                "BharatAI_RepeatTest",
-                "Inference $testRun: outputCount=${logits.size}, allFinite=$allFinite"
-            )
-
-            check(logits.size == 3)
-            check(allFinite)
-
-            finalLogits = logits
+            outputs[0].toTensor().dataAsFloatArray.copyOf()
         }
 
-        android.util.Log.d(
-            "BharatAI_RepeatTest",
-            "ALL FIVE INFERENCES COMPLETED"
-        )
+        Log.d("Classifier_Debug", "7. Module closed")
 
-        val logits = finalLogits!!
+        val allFinite = logits.all { it.isFinite() }
+
+        Log.d(
+            "Classifier_Debug",
+            "Output: ${logits.contentToString()}, allFinite=$allFinite"
+        )
 
         require(logits.size == LABELS.size) {
             "Expected 3 model outputs, received ${logits.size}"
         }
 
+        check(allFinite) {
+            "Model returned invalid output values"
+        }
+
         val maxIndex = logits.indices.maxByOrNull { logits[it] } ?: 0
 
         val maxLogit = logits[maxIndex]
-        val expScores = logits.map { exp((it - maxLogit).toDouble()) }
+
+        val expScores = logits.map {
+            exp((it - maxLogit).toDouble())
+        }
+
         val confidence = (
                 expScores[maxIndex] / expScores.sum()
                 ).toFloat()

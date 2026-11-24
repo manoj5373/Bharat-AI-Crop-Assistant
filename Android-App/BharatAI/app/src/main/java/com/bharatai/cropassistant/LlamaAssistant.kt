@@ -98,7 +98,7 @@ class LlamaAssistant(private val context: Context) {
         activeModule.resetContext()
 
         val generationConfig = LlmGenerationConfig.create()
-            .seqLen(96)
+            .seqLen(128)
             .temperature(0.0f)
             .echo(false)
             .numBos(1)
@@ -106,10 +106,14 @@ class LlamaAssistant(private val context: Context) {
 
         Log.d("LLAMA_DEBUG", "ACTUAL PROMPT: $prompt")
         Log.d("LLAMA_DEBUG", "PROMPT LENGTH: ${prompt.length}")
+        Log.d("LLAMA_DEBUG", "PROMPT UTF8 BYTES: ${prompt.toByteArray(Charsets.UTF_8).size}")
 
 
-        android.util.Log.d("LLAMA_DEBUG", "CONFIG CHECK: seqLen=96")
+        android.util.Log.d("LLAMA_DEBUG", "CONFIG CHECK: seqLen=128")
 
+        Log.d("LLAMA_DEBUG", "Prompt starts with: ${prompt.take(80)}")
+        Log.d("LLAMA_DEBUG", "Prompt ends with: ${prompt.takeLast(80)}")
+        Log.d("LLAMA_DEBUG", "Generation seqLen: 128")
 
         activeModule.generate(
             prompt,
