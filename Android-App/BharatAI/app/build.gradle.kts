@@ -59,4 +59,7 @@ dependencies {
 
     implementation("org.pytorch:executorch-android:1.5.1")
     implementation("com.google.android.gms:play-services-location:21.3.0")
+
+    implementation("com.google.mlkit:translate:17.0.3")
+
 }

@@ -90,6 +90,8 @@ class MulberryClassifier(context: Context) {
 
         Log.d("Classifier_Debug", "4. Input tensor created")
 
+        Log.d("Classifier_Debug", "4.5 Starting fresh module load")
+
         // Load a fresh module for this prediction.
         val logits = Module.load(modelFile.absolutePath).use { activeModule ->
 

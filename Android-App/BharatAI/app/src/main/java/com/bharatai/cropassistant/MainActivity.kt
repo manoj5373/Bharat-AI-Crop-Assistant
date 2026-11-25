@@ -20,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.Job
 import com.bharatai.cropassistant.ui.theme.BharatAITheme
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -192,8 +193,34 @@ data class AppStrings(
     val noDistrictData: String,
     val noTalukData: String,
     val noVillageData: String,
-    val regionalEmptyDescription: String
+    val regionalEmptyDescription: String,
 
+
+    // Diagnosis Results - Severity and Safety
+    val diseaseDetectionTitle: String = "Disease Detection",
+    val severityAssessmentTitle: String = "Severity Assessment",
+    val severityLevelLabel: String = "Severity Level:",
+    val healthySeverity: String = "Healthy",
+    val mildSeverity: String = "Mild",
+    val moderateSeverity: String = "Moderate",
+    val severeSeverity: String = "Severe",
+    val modelScoreLabel: String = "Model score:",
+    val classScoresTitle: String = "Class scores",
+    val safetyNoticeTitle: String = "Safety Notice",
+    val safetyNoticeText: String =
+        "Do not apply pesticides based only on AI image classification. Consult a local sericulture or agriculture expert.",
+    val analyzingImageMessage: String = "Analyzing leaf image...",
+    val analysisFailedLabel: String = "Analysis failed:",
+    val assessingSeverityMessage: String = "Assessing leaf severity...",
+    val severityUnavailableMessage: String =
+        "Severity assessment is not available.",
+    val llamaExplanationTitle: String = "Bharat AI Explanation",
+    val llamaPreparingMessage: String = "Preparing Llama model...",
+    val llamaGeneratingMessage: String =
+        "Generating farmer-friendly explanation...",
+    val llamaGeneratedMessage: String = "Explanation generated!",
+    val diseaseFreeLeaves: String,
+    val leafRust: String
 )
 
 private fun translationsFor(language: String): AppStrings {
@@ -306,7 +333,31 @@ private fun translationsFor(language: String): AppStrings {
             noDistrictData = "के लिए ज़िले का डेटा उपलब्ध नहीं है",
             noTalukData = "के लिए तालुक का डेटा उपलब्ध नहीं है",
             noVillageData = "के लिए गाँव का डेटा उपलब्ध नहीं है",
-            regionalEmptyDescription = "आपके चुने हुए क्षेत्र के लिए सत्यापित कृषि सलाह यहाँ दिखाई देगी।"
+            regionalEmptyDescription = "आपके चुने हुए क्षेत्र के लिए सत्यापित कृषि सलाह यहाँ दिखाई देगी।",
+
+
+            diseaseDetectionTitle = "रोग पहचान",
+            severityAssessmentTitle = "गंभीरता का आकलन",
+            severityLevelLabel = "गंभीरता स्तर:",
+            healthySeverity = "स्वस्थ",
+            mildSeverity = "हल्का",
+            moderateSeverity = "मध्यम",
+            severeSeverity = "गंभीर",
+            modelScoreLabel = "मॉडल स्कोर:",
+            classScoresTitle = "श्रेणी स्कोर",
+            safetyNoticeTitle = "सुरक्षा सूचना",
+            safetyNoticeText = "केवल AI छवि वर्गीकरण के आधार पर कीटनाशकों का उपयोग न करें। स्थानीय रेशम उत्पादन या कृषि विशेषज्ञ से सलाह लें।",
+            analyzingImageMessage = "पत्ती की तस्वीर का विश्लेषण किया जा रहा है...",
+            analysisFailedLabel = "विश्लेषण विफल:",
+            assessingSeverityMessage = "पत्ती की गंभीरता का आकलन किया जा रहा है...",
+            severityUnavailableMessage = "गंभीरता का आकलन उपलब्ध नहीं है।",
+            llamaExplanationTitle = "भारत AI स्पष्टीकरण",
+            llamaPreparingMessage = "Llama मॉडल तैयार किया जा रहा है...",
+            llamaGeneratingMessage = "किसान के लिए सरल स्पष्टीकरण तैयार किया जा रहा है...",
+            diseaseFreeLeaves = "रोग-मुक्त पत्तियाँ",
+            leafRust = "पत्ती का रतुआ रोग",
+            llamaGeneratedMessage = "स्पष्टीकरण तैयार हो गया!"
+
         )
 
         "Kannada" -> AppStrings(
@@ -416,7 +467,31 @@ private fun translationsFor(language: String): AppStrings {
             noDistrictData = "ಇದಕ್ಕೆ ಜಿಲ್ಲೆ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ",
             noTalukData = "ಇದಕ್ಕೆ ತಾಲೂಕು ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ",
             noVillageData = "ಇದಕ್ಕೆ ಗ್ರಾಮ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ",
-            regionalEmptyDescription = "ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಪ್ರದೇಶದ ಪರಿಶೀಲಿತ ಕೃಷಿ ಸಲಹೆಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ."
+            regionalEmptyDescription = "ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಪ್ರದೇಶದ ಪರಿಶೀಲಿತ ಕೃಷಿ ಸಲಹೆಗಳು ಇಲ್ಲಿ ಕಾಣಿಸುತ್ತವೆ.",
+
+
+            diseaseDetectionTitle = "ರೋಗ ಪತ್ತೆ",
+            severityAssessmentTitle = "ತೀವ್ರತೆಯ ಮೌಲ್ಯಮಾಪನ",
+            severityLevelLabel = "ತೀವ್ರತೆಯ ಮಟ್ಟ:",
+            healthySeverity = "ಆರೋಗ್ಯಕರ",
+            mildSeverity = "ಸೌಮ್ಯ",
+            moderateSeverity = "ಮಧ್ಯಮ",
+            severeSeverity = "ತೀವ್ರ",
+            modelScoreLabel = "ಮಾದರಿ ಅಂಕ:",
+            classScoresTitle = "ವರ್ಗಗಳ ಅಂಕಗಳು",
+            safetyNoticeTitle = "ಸುರಕ್ಷತಾ ಸೂಚನೆ",
+            safetyNoticeText = "AI ಚಿತ್ರ ವರ್ಗೀಕರಣದ ಆಧಾರದ ಮೇಲೆ ಮಾತ್ರ ಕೀಟನಾಶಕಗಳನ್ನು ಬಳಸಬೇಡಿ. ಸ್ಥಳೀಯ ರೇಷ್ಮೆ ಅಥವಾ ಕೃಷಿ ತಜ್ಞರನ್ನು ಸಂಪರ್ಕಿಸಿ.",
+            analyzingImageMessage = "ಎಲೆಯ ಚಿತ್ರವನ್ನು ವಿಶ್ಲೇಷಿಸಲಾಗುತ್ತಿದೆ...",
+            analysisFailedLabel = "ವಿಶ್ಲೇಷಣೆ ವಿಫಲವಾಗಿದೆ:",
+            assessingSeverityMessage = "ಎಲೆಯ ತೀವ್ರತೆಯನ್ನು ಮೌಲ್ಯಮಾಪನ ಮಾಡಲಾಗುತ್ತಿದೆ...",
+            severityUnavailableMessage = "ತೀವ್ರತೆಯ ಮೌಲ್ಯಮಾಪನ ಲಭ್ಯವಿಲ್ಲ.",
+            llamaExplanationTitle = "ಭಾರತ AI ವಿವರಣೆ",
+            llamaPreparingMessage = "Llama ಮಾದರಿಯನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ...",
+            llamaGeneratingMessage = "ರೈತರಿಗೆ ಸರಳ ವಿವರಣೆಯನ್ನು ರಚಿಸಲಾಗುತ್ತಿದೆ...",
+            diseaseFreeLeaves = "ರೋಗರಹಿತ ಎಲೆಗಳು",
+            leafRust = "ಎಲೆ ತುಕ್ಕು ರೋಗ",
+            llamaGeneratedMessage = "ವಿವರಣೆ ಸಿದ್ಧವಾಗಿದೆ!"
+
         )
 
         "Telugu" -> AppStrings(
@@ -526,7 +601,31 @@ private fun translationsFor(language: String): AppStrings {
             noDistrictData = "దీనికి జిల్లా సమాచారం అందుబాటులో లేదు",
             noTalukData = "దీనికి తాలూకా సమాచారం అందుబాటులో లేదు",
             noVillageData = "దీనికి గ్రామ సమాచారం అందుబాటులో లేదు",
-            regionalEmptyDescription = "మీరు ఎంచుకున్న ప్రాంతానికి సంబంధించిన ధృవీకరించిన వ్యవసాయ సలహాలు ఇక్కడ కనిపిస్తాయి."
+            regionalEmptyDescription = "మీరు ఎంచుకున్న ప్రాంతానికి సంబంధించిన ధృవీకరించిన వ్యవసాయ సలహాలు ఇక్కడ కనిపిస్తాయి.",
+
+
+            diseaseDetectionTitle = "వ్యాధి గుర్తింపు",
+            severityAssessmentTitle = "తీవ్రత అంచనా",
+            severityLevelLabel = "తీవ్రత స్థాయి:",
+            healthySeverity = "ఆరోగ్యకరమైనది",
+            mildSeverity = "స్వల్పం",
+            moderateSeverity = "మధ్యస్థం",
+            severeSeverity = "తీవ్రమైనది",
+            modelScoreLabel = "మోడల్ స్కోర్:",
+            classScoresTitle = "తరగతుల స్కోర్లు",
+            safetyNoticeTitle = "భద్రతా సూచన",
+            safetyNoticeText = "AI చిత్ర వర్గీకరణ ఆధారంగా మాత్రమే పురుగుమందులను ఉపయోగించవద్దు. స్థానిక సెరికల్చర్ లేదా వ్యవసాయ నిపుణుడిని సంప్రదించండి.",
+            analyzingImageMessage = "ఆకు చిత్రాన్ని విశ్లేషిస్తోంది...",
+            analysisFailedLabel = "విశ్లేషణ విఫలమైంది:",
+            assessingSeverityMessage = "ఆకు తీవ్రతను అంచనా వేస్తోంది...",
+            severityUnavailableMessage = "తీవ్రత అంచనా అందుబాటులో లేదు.",
+            llamaExplanationTitle = "భారత్ AI వివరణ",
+            llamaPreparingMessage = "Llama మోడల్‌ను సిద్ధం చేస్తోంది...",
+            llamaGeneratingMessage = "రైతులకు సరళమైన వివరణను రూపొందిస్తోంది...",
+            diseaseFreeLeaves = "వ్యాధి లేని ఆకులు",
+            leafRust = "ఆకు తుప్పు వ్యాధి",
+            llamaGeneratedMessage = "వివరణ సిద్ధమైంది!"
+
         )
 
         else -> AppStrings(
@@ -635,7 +734,30 @@ private fun translationsFor(language: String): AppStrings {
             noDistrictData = "No district data available for",
             noTalukData = "No taluk data available for",
             noVillageData = "No village data available for",
-            regionalEmptyDescription = "Verified farming recommendations for your selected region will appear here."
+            regionalEmptyDescription = "Verified farming recommendations for your selected region will appear here.",
+
+
+            diseaseDetectionTitle = "Disease Detection",
+            severityAssessmentTitle = "Severity Assessment",
+            severityLevelLabel = "Severity Level:",
+            healthySeverity = "Healthy",
+            mildSeverity = "Mild",
+            moderateSeverity = "Moderate",
+            severeSeverity = "Severe",
+            modelScoreLabel = "Model score:",
+            classScoresTitle = "Class scores",
+            safetyNoticeTitle = "Safety Notice",
+            safetyNoticeText = "Do not apply pesticides based only on AI image classification. Consult a local sericulture or agriculture expert.",
+            analyzingImageMessage = "Analyzing leaf image...",
+            analysisFailedLabel = "Analysis failed:",
+            assessingSeverityMessage = "Assessing leaf severity...",
+            severityUnavailableMessage = "Severity assessment is not available.",
+            llamaExplanationTitle = "Bharat AI Explanation",
+            llamaPreparingMessage = "Preparing Llama model...",
+            llamaGeneratingMessage = "Generating farmer-friendly explanation...",
+            diseaseFreeLeaves = "Disease-Free Leaves",
+            leafRust = "Leaf Rust",
+            llamaGeneratedMessage = "Explanation generated!"
         )
     }
 }
@@ -1317,6 +1439,10 @@ private fun DiagnosisResultsScreen(
 
     val scope = rememberCoroutineScope()
 
+    val offlineTranslator = remember {
+        OfflineTranslator()
+    }
+
     var llamaLoaded by remember {
         mutableStateOf(false)
     }
@@ -1327,6 +1453,14 @@ private fun DiagnosisResultsScreen(
 
     var llamaExplanation by remember {
         mutableStateOf("")
+    }
+
+    var translatedLlamaExplanation by remember {
+        mutableStateOf("")
+    }
+
+    var translationJob by remember {
+        mutableStateOf<Job?>(null)
     }
 
     var llamaStatus by remember {
@@ -1347,15 +1481,16 @@ private fun DiagnosisResultsScreen(
         }
     }
 
+
     LaunchedEffect(
         image,
         prediction?.diseaseName,
         prediction?.confidence,
-        selectedLanguage,
         isAnalyzing,
         analysisError
     ) {
-        val currentPrediction = prediction
+
+    val currentPrediction = prediction
 
         if (
             !ENABLE_LLAMA_EXPLANATION ||
@@ -1372,12 +1507,22 @@ private fun DiagnosisResultsScreen(
             ?: "Consult a local sericulture or agriculture expert."
 
 
+        val currentSeverity = severityPrediction
+
+        val severityName = currentSeverity?.severityName
+            ?: "Unavailable"
+
+        val severityScore = currentSeverity?.let {
+            String.format(
+                java.util.Locale.US,
+                "%.2f%%",
+                it.confidence * 100
+            )
+        } ?: "Unavailable"
+
         val prompt = buildDiagnosisPrompt(
-                disease = currentPrediction.diseaseName,
-        confidence = currentPrediction.confidence,
-        symptoms = symptoms,
-        safetyNote = safety,
-        language = selectedLanguage
+            disease = currentPrediction.diseaseName,
+            severity = severityPrediction?.severityName ?: "Unavailable"
         )
 
         Log.d("LLAMA_DEBUG", "Selected language: $selectedLanguage")
@@ -1386,7 +1531,9 @@ private fun DiagnosisResultsScreen(
 
         llamaExplanation = ""
         isGeneratingExplanation = true
-        llamaStatus = "Preparing Llama model..."
+        llamaStatus = 	strings.llamaPreparingMessage
+
+        translatedLlamaExplanation = ""
 
         try {
             withContext(Dispatchers.IO) {
@@ -1396,7 +1543,7 @@ private fun DiagnosisResultsScreen(
             }
 
             llamaLoaded = true
-            llamaStatus = "Generating farmer-friendly explanation..."
+            llamaStatus = strings.llamaGeneratingMessage
 
             Log.d("LLAMA_DEBUG", "Before generate()")
 
@@ -1418,7 +1565,7 @@ private fun DiagnosisResultsScreen(
 
                             mainHandler.post {
                                 isGeneratingExplanation = false
-                                llamaStatus = "Explanation generated!"
+                                llamaStatus = 	strings.llamaGeneratedMessage
                             }
                         }
 
@@ -1444,6 +1591,46 @@ private fun DiagnosisResultsScreen(
                 isGeneratingExplanation = false
                 llamaStatus = "Error: ${e.message}"
             }
+        }
+    }
+
+    LaunchedEffect(
+        llamaExplanation,
+        selectedLanguage,
+        isGeneratingExplanation
+    ) {
+        if (llamaExplanation.isBlank() || isGeneratingExplanation) {
+            return@LaunchedEffect
+        }
+
+        if (selectedLanguage == "English") {
+            translatedLlamaExplanation = llamaExplanation
+            return@LaunchedEffect
+        }
+
+        Log.d(
+            "TRANSLATION_DEBUG",
+            "Selected language in UI: $selectedLanguage"
+        )
+
+        try {
+            translatedLlamaExplanation = offlineTranslator.translate(
+                text = llamaExplanation,
+                targetLanguage = selectedLanguage
+            )
+
+            Log.d(
+                "TRANSLATION_DEBUG",
+                "Translation successful: $selectedLanguage"
+            )
+
+        } catch (e: Exception) {
+            Log.e(
+                "TRANSLATION_DEBUG",
+                "Translation failed: ${e.message}"
+            )
+
+            translatedLlamaExplanation = llamaExplanation
         }
     }
 
@@ -1557,104 +1744,41 @@ private fun DiagnosisResultsScreen(
                 when {
                     isAnalyzing -> {
                         CircularProgressIndicator(color = Green)
-                        Text("Analyzing leaf image...")
+                        Text(strings.analyzingImageMessage)
                     }
 
                     analysisError != null -> {
                         Text(
-                            text = "Analysis failed: $analysisError",
+                            text = 	"${strings.analysisFailedLabel} $analysisError",
                             color = Color.Red
                         )
                     }
 
+
                     prediction != null -> {
-                        Text(
-                            text = "${strings.diseaseLabel} ${prediction.diseaseName}",
-                            fontWeight = FontWeight.Bold,
-                            color = DarkText
-                        )
+                        val translatedDiseaseName = when (
+                            prediction.diseaseName.trim().lowercase()
+                        ) {
+                            "disease free leaves",
+                            "disease-free leaves" -> strings.diseaseFreeLeaves
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                            "leaf spot" -> strings.leafSpot
 
-                        Text(
-                            text = "${strings.confidenceLabel} ${
-                                "%.2f".format(
-                                    java.util.Locale.US,
-                                    prediction.confidence * 100
-                                )
-                            }%",
-                            color = DarkText
-                        )
+                            "leaf rust" -> strings.leafRust
 
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Text(
-                            text = "AI model result. Please confirm with a crop expert.",
-                            fontSize = 13.sp,
-                            color = GreyText
-                        )
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        if (diseaseInfo != null) {
-
-                            Text(
-                                text = "Disease Information",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Green
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "Verified symptoms",
-                                fontWeight = FontWeight.Bold,
-                                color = DarkText
-                            )
-
-                            if (diseaseInfo.symptoms.isEmpty()) {
-                                Text("Verified symptom information is not available yet.")
-                            } else {
-                                diseaseInfo.symptoms.forEach { symptom ->
-                                    Text("• $symptom", color = DarkText)
-                                }
-                            }
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "Treatment: Not yet verified",
-                                fontWeight = FontWeight.Bold,
-                                color = DarkText
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "Safety: ${diseaseInfo.safetyNote}",
-                                color = Color(0xFFB45309)
-                            )
-
-                        } else if (prediction.diseaseName == "Disease Free leaves") {
-                            Text(
-                                text = "No disease was detected by the AI classifier.",
-                                color = Green,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            Text(
-                                text = "Continue regular crop monitoring. This result does not guarantee that the plant is completely disease-free.",
-                                color = GreyText
-                            )
-                        } else {
-                            Text(
-                                text = "No verified advisory information is available for this classification yet.",
-                                color = GreyText
-                            )
+                            else -> prediction.diseaseName
                         }
+
+                        Text(
+                            text = "${strings.diseaseLabel} $translatedDiseaseName",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 17.sp,
+                            color = DarkText
+                        )
+
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
+
 
                     else -> {
                         Text("No prediction available.")
@@ -1668,7 +1792,7 @@ private fun DiagnosisResultsScreen(
 
 // Severity Assessment
                 Text(
-                    text = "Severity Assessment",
+                    text = strings.severityAssessmentTitle,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = Green
@@ -1679,7 +1803,7 @@ private fun DiagnosisResultsScreen(
                 when {
                     isAnalyzing -> {
                         Text(
-                            text = "Assessing leaf severity...",
+                            text = strings.assessingSeverityMessage,
                             color = GreyText
                         )
                     }
@@ -1687,8 +1811,16 @@ private fun DiagnosisResultsScreen(
                     severityPrediction != null -> {
                         val severity = severityPrediction
 
+                        val severityDisplayName = when (severity.severityName.trim().lowercase()) {
+                            "healthy" -> strings.healthySeverity
+                            "mild" -> strings.mildSeverity
+                            "moderate" -> strings.moderateSeverity
+                            "severe" -> strings.severeSeverity
+                            else -> severity.severityName
+                        }
+
                         Text(
-                            text = "Severity Level: ${severity.severityName}",
+                            text = "${strings.severityLevelLabel} $severityDisplayName",
                             fontWeight = FontWeight.Bold,
                             fontSize = 17.sp,
                             color = DarkText
@@ -1697,7 +1829,7 @@ private fun DiagnosisResultsScreen(
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "Model score: ${
+                            text = "${strings.modelScoreLabel} ${
                                 "%.2f".format(
                                     java.util.Locale.US,
                                     severity.confidence * 100
@@ -1709,16 +1841,16 @@ private fun DiagnosisResultsScreen(
                         Spacer(modifier = Modifier.height(12.dp))
 
                         Text(
-                            text = "Class scores",
+                            text = strings.classScoresTitle,
                             fontWeight = FontWeight.SemiBold,
                             color = DarkText
                         )
 
                         val severityLabels = listOf(
-                            "Healthy",
-                            "Mild",
-                            "Moderate",
-                            "Severe"
+                            strings.healthySeverity,
+                            strings.mildSeverity,
+                            strings.moderateSeverity,
+                            strings.severeSeverity
                         )
 
                         severityLabels.forEachIndexed { index, label ->
@@ -1757,14 +1889,6 @@ private fun DiagnosisResultsScreen(
                                 )
                             }
                         }
-
-                        Spacer(modifier = Modifier.height(10.dp))
-
-                        Text(
-                            text = "These are model scores, not calibrated diagnostic probabilities. Please confirm the assessment with an agriculture expert.",
-                            fontSize = 12.sp,
-                            color = GreyText
-                        )
                     }
 
                     severityError != null -> {
@@ -1776,7 +1900,7 @@ private fun DiagnosisResultsScreen(
 
                     else -> {
                         Text(
-                            text = "Severity assessment is not available.",
+                            text = strings.severityUnavailableMessage,
                             color = GreyText
                         )
                     }
@@ -1785,14 +1909,22 @@ private fun DiagnosisResultsScreen(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "Bharat AI Explanation",
+                    text = strings.llamaExplanationTitle,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
                     color = Green
                 )
 
                 Text(
-                    text = llamaStatus,
+                    text = when {
+                        isGeneratingExplanation ->
+                            strings.llamaGeneratingMessage
+
+                        llamaExplanation.isNotBlank() ->
+                            strings.llamaGeneratedMessage
+
+                        else -> llamaStatus
+                    },
                     color = GreyText,
                     fontSize = 13.sp
                 )
@@ -1804,18 +1936,51 @@ private fun DiagnosisResultsScreen(
                     )
                 }
 
-
-                if (llamaExplanation.isNotBlank()) {
+                if (translatedLlamaExplanation.isNotBlank()) {
                     Text(
-                        text = llamaExplanation,
+                        text = translatedLlamaExplanation,
                         color = DarkText,
                         fontSize = 15.sp
                     )
                 }
 
+                Spacer(modifier = Modifier.height(12.dp))
+
                 Spacer(modifier = Modifier.height(20.dp))
 
+// Safety Notice at the bottom
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFFFF7ED)
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(12.dp)
+                    ) {
+                        Text(
+                            text = strings.safetyNoticeTitle,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFFB45309)
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = strings.safetyNoticeText,
+                            color = Color(0xFFB45309),
+                            fontSize = 13.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 Button(
+
                     onClick = onTreatmentClick,
                     modifier = Modifier.fillMaxWidth(),
                     colors = ButtonDefaults.buttonColors(
@@ -1834,37 +1999,10 @@ private fun DiagnosisResultsScreen(
 }
 
 
-
 private fun buildDiagnosisPrompt(
     disease: String,
-    confidence: Float,
-    symptoms: List<String>,
-    safetyNote: String,
-    language: String
+    severity: String
 ): String {
-
-    val lang = when (language.trim().lowercase()) {
-        "hindi" -> "Hindi"
-        "kannada" -> "Kannada"
-        "telugu" -> "Telugu"
-        else -> "English"
-    }
-
-    val symptomText = if (symptoms.isEmpty()) {
-        "Unavailable"
-    } else {
-        symptoms.take(2).joinToString("; ")
-    }
-
-    val languageInstruction = when (lang) {
-        "Hindi" -> "आपको पूरा उत्तर केवल हिंदी भाषा में देवनागरी लिपि में देना है। अंग्रेज़ी में उत्तर न दें।"
-        "Kannada" -> "ನೀವು ಸಂಪೂರ್ಣ ಉತ್ತರವನ್ನು ಕನ್ನಡ ಭಾಷೆಯಲ್ಲಿ ಮಾತ್ರ ನೀಡಬೇಕು. ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಉತ್ತರಿಸಬೇಡಿ."
-        "Telugu" -> "మీరు పూర్తి సమాధానాన్ని తెలుగులో మాత్రమే ఇవ్వాలి. ఆంగ్లంలో ಉತ್ತರించకండి."
-        else -> "Write the entire response in English only."
-    }
-
-
-
 
     return """
 <|start_header_id|>system<|end_header_id|>
@@ -1873,16 +2011,14 @@ Use simple English.
 Do not repeat the result or confidence.
 Do not invent facts, causes or treatments.
 Write exactly two short sentences.
-Explain only what the detected result means.
+Explain only what the detected result and severity mean.
 <|eot_id|><|start_header_id|>user<|end_header_id|>
 Detected result: $disease
+Severity: $severity
 <|eot_id|><|start_header_id|>assistant<|end_header_id|>
 """.trimIndent()
-
-
-
-
 }
+
 
 @Composable
 private fun TreatmentScreen(

@@ -7,6 +7,7 @@ import org.pytorch.executorch.Module
 import org.pytorch.executorch.Tensor
 import java.io.File
 import kotlin.math.exp
+import android.util.Log
 
 data class SeverityPrediction(
     val classIndex: Int,
@@ -32,10 +33,10 @@ class MulberrySeverityClassifier(context: Context) {
         )
     }
 
-    private val module: Module
+    private val modelFile: File
 
     init {
-        val modelFile = File(context.filesDir, MODEL_FILE)
+        modelFile = File(context.filesDir, MODEL_FILE)
 
         if (!modelFile.exists()) {
             context.assets.open(MODEL_FILE).use { input ->
@@ -44,8 +45,6 @@ class MulberrySeverityClassifier(context: Context) {
                 }
             }
         }
-
-        module = Module.load(modelFile.absolutePath)
     }
 
     /**
@@ -67,8 +66,20 @@ class MulberrySeverityClassifier(context: Context) {
             longArrayOf(1, 3, INPUT_SIZE.toLong(), INPUT_SIZE.toLong())
         )
 
-        val outputs = module.forward(EValue.from(inputTensor))
-        val logits = outputs[0].toTensor().dataAsFloatArray
+        Log.d("SEVERITY_DEBUG", "Loading fresh severity module")
+
+        val logits = Module.load(modelFile.absolutePath).use { activeModule ->
+
+            Log.d("SEVERITY_DEBUG", "Severity module loaded")
+
+            val outputs = activeModule.forward(EValue.from(inputTensor))
+
+            Log.d("SEVERITY_DEBUG", "Severity module.forward() returned")
+
+            outputs[0].toTensor().dataAsFloatArray.copyOf()
+        }
+
+        Log.d("SEVERITY_DEBUG", "Severity module closed")
 
         require(logits.size == LABELS.size) {
             "Expected 4 outputs, received ${logits.size}"
