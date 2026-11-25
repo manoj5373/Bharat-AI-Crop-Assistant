@@ -76,6 +76,42 @@ The application follows an on-device processing workflow:
 6. The generated explanation is translated into the selected application language when required.
 7. The diagnosis and advisory are displayed to the farmer.
 
+## Application Screenshots
+
+The following screenshots showcase the working KrishiMitra AI Android application and its major features.
+
+### 1. Home Screen
+
+![Home Screen](Documentation/screenshots/home-screen.png)
+
+### 2. Language Selection
+
+![Language Selection](Documentation/screenshots/language-selection.png)
+
+### 3. Crop Scanning
+
+![Crop Scanning](Documentation/screenshots/crop-scan.png)
+
+### 4. Disease Detection Results
+
+![Disease Detection](Documentation/screenshots/disease-results.png)
+
+### 6. Llama AI-Powered Advisory
+
+![AI Advisory](Documentation/screenshots/ai-advisory.png)
+
+### 7. Treatment Recommendations
+
+![Treatment Recommendations](Documentation/screenshots/treatment.png)
+
+### 8. Regional Agricultural Advisory
+
+![Regional Advisory](Documentation/screenshots/regional-advisory.png)
+
+### 9. Farmer Profile
+
+![Farmer Profile](Documentation/screenshots/farmer-profile.png)
+
 ## Target Device
 
 - Test Device: Samsung Galaxy A35 5G
