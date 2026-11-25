@@ -108,6 +108,12 @@ KrishiMitra-AI/
 └── README.md
 ```
 
+## Main Android Application Source Code
+
+The main Android application source code, including Kotlin files for the user interface, disease classification, severity assessment, Llama advisory, image preprocessing, and other application components, is available here:
+
+**[Explore Main Android Application Source Code](Android-App/BharatAI/app/src/main/java/com/bharatai/cropassistant/)**
+
 ## Limitations
 
 - Current crop disease detection is focused on mulberry leaves.
