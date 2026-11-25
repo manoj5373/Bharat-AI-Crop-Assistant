@@ -226,7 +226,7 @@ data class AppStrings(
 private fun translationsFor(language: String): AppStrings {
     return when (language) {
         "Hindi" -> AppStrings(
-            appSubtitle = "स्मार्ट कृषि सहायक",
+            appSubtitle = "ऑफ़लाइन AI-संचालित कृषि सहायक",
             welcome = "नमस्ते किसान!",
             welcomeDescription = "आपकी फसल, हमारी जिम्मेदारी",
             scanTitle = "फसल स्कैन करें",
@@ -351,7 +351,7 @@ private fun translationsFor(language: String): AppStrings {
             analysisFailedLabel = "विश्लेषण विफल:",
             assessingSeverityMessage = "पत्ती की गंभीरता का आकलन किया जा रहा है...",
             severityUnavailableMessage = "गंभीरता का आकलन उपलब्ध नहीं है।",
-            llamaExplanationTitle = "भारत AI स्पष्टीकरण",
+            llamaExplanationTitle = "KrishiMitra AI स्पष्टीकरण",
             llamaPreparingMessage = "Llama मॉडल तैयार किया जा रहा है...",
             llamaGeneratingMessage = "किसान के लिए सरल स्पष्टीकरण तैयार किया जा रहा है...",
             diseaseFreeLeaves = "रोग-मुक्त पत्तियाँ",
@@ -361,7 +361,7 @@ private fun translationsFor(language: String): AppStrings {
         )
 
         "Kannada" -> AppStrings(
-            appSubtitle = "ಸ್ಮಾರ್ಟ್ ಕೃಷಿ ಸಹಾಯಕ",
+            appSubtitle = "ಆಫ್‌ಲೈನ್ AI ಆಧಾರಿತ ಕೃಷಿ ಸಹಾಯಕ",
             welcome = "ನಮಸ್ಕಾರ ರೈತರೇ!",
             welcomeDescription = "ನಿಮ್ಮ ಬೆಳೆ, ನಮ್ಮ ಜವಾಬ್ದಾರಿ",
             scanTitle = "ಬೆಳೆಯನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ",
@@ -485,7 +485,7 @@ private fun translationsFor(language: String): AppStrings {
             analysisFailedLabel = "ವಿಶ್ಲೇಷಣೆ ವಿಫಲವಾಗಿದೆ:",
             assessingSeverityMessage = "ಎಲೆಯ ತೀವ್ರತೆಯನ್ನು ಮೌಲ್ಯಮಾಪನ ಮಾಡಲಾಗುತ್ತಿದೆ...",
             severityUnavailableMessage = "ತೀವ್ರತೆಯ ಮೌಲ್ಯಮಾಪನ ಲಭ್ಯವಿಲ್ಲ.",
-            llamaExplanationTitle = "ಭಾರತ AI ವಿವರಣೆ",
+            llamaExplanationTitle = "KrishiMitra AI ವಿವರಣೆ",
             llamaPreparingMessage = "Llama ಮಾದರಿಯನ್ನು ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ...",
             llamaGeneratingMessage = "ರೈತರಿಗೆ ಸರಳ ವಿವರಣೆಯನ್ನು ರಚಿಸಲಾಗುತ್ತಿದೆ...",
             diseaseFreeLeaves = "ರೋಗರಹಿತ ಎಲೆಗಳು",
@@ -495,7 +495,7 @@ private fun translationsFor(language: String): AppStrings {
         )
 
         "Telugu" -> AppStrings(
-            appSubtitle = "స్మార్ట్ వ్యవసాయ సహాయకుడు",
+            appSubtitle = "ఆఫ్‌లైన్ AI ఆధారిత వ్యవసాయ సహాయకుడు",
             welcome = "నమస్కారం రైతు!",
             welcomeDescription = "మీ పంట, మా బాధ్యత",
             scanTitle = "పంటను స్కాన్ చేయండి",
@@ -619,7 +619,7 @@ private fun translationsFor(language: String): AppStrings {
             analysisFailedLabel = "విశ్లేషణ విఫలమైంది:",
             assessingSeverityMessage = "ఆకు తీవ్రతను అంచనా వేస్తోంది...",
             severityUnavailableMessage = "తీవ్రత అంచనా అందుబాటులో లేదు.",
-            llamaExplanationTitle = "భారత్ AI వివరణ",
+            llamaExplanationTitle = "KrishiMitra AI వివరణ",
             llamaPreparingMessage = "Llama మోడల్‌ను సిద్ధం చేస్తోంది...",
             llamaGeneratingMessage = "రైతులకు సరళమైన వివరణను రూపొందిస్తోంది...",
             diseaseFreeLeaves = "వ్యాధి లేని ఆకులు",
@@ -629,7 +629,7 @@ private fun translationsFor(language: String): AppStrings {
         )
 
         else -> AppStrings(
-            appSubtitle = "Smart Farming Assistant",
+            appSubtitle = "An Offline AI-Powered Farming Assistant",
             welcome = "Namaste, Farmer!",
             welcomeDescription = "Your crops, our responsibility",
             scanTitle = "Scan Your Crop",
@@ -752,7 +752,7 @@ private fun translationsFor(language: String): AppStrings {
             analysisFailedLabel = "Analysis failed:",
             assessingSeverityMessage = "Assessing leaf severity...",
             severityUnavailableMessage = "Severity assessment is not available.",
-            llamaExplanationTitle = "Bharat AI Explanation",
+            llamaExplanationTitle = "KrishiMitra AI Explanation",
             llamaPreparingMessage = "Preparing Llama model...",
             llamaGeneratingMessage = "Generating farmer-friendly explanation...",
             diseaseFreeLeaves = "Disease-Free Leaves",
@@ -1127,7 +1127,7 @@ fun BharatAIHomeScreen() {
 
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "BHARAT AI",
+                    text = "KrishiMitra AI",
                     fontSize = 19.sp,
                     fontWeight = FontWeight.Bold,
                     color = Green
