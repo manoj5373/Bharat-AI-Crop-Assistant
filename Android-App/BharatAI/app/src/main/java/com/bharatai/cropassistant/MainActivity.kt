@@ -58,6 +58,7 @@ import android.util.Log
 import org.pytorch.executorch.extension.llm.LlmCallback
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.core.content.ContextCompat
@@ -1417,6 +1418,7 @@ fun BharatAIHomeScreen() {
 }
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 private fun DiagnosisResultsScreen(
     image: Bitmap,
@@ -1490,7 +1492,7 @@ private fun DiagnosisResultsScreen(
         analysisError
     ) {
 
-    val currentPrediction = prediction
+        val currentPrediction = prediction
 
         if (
             !ENABLE_LLAMA_EXPLANATION ||
@@ -1505,7 +1507,6 @@ private fun DiagnosisResultsScreen(
 
         val safety = diseaseInfo?.safetyNote
             ?: "Consult a local sericulture or agriculture expert."
-
 
         val currentSeverity = severityPrediction
 
