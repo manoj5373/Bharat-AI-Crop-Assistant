@@ -129,6 +129,20 @@ KrishiMitra-AI/
 
 KrishiMitra AI aims to make AI-assisted crop health analysis more accessible to farmers through an offline-first, multilingual Android application.
 
+## Project Architecture and Workflow
+
+### 1. AI Model Development Workflow
+
+![AI Model Development Workflow](Documentation/ai-development-workflow.png)
+
+This diagram illustrates the development workflow, including dataset preparation, image annotation, disease and severity classification, Llama-based farmer advisory, model evaluation, ExecuTorch export, and Android integration.
+
+### 2. Android Application Architecture
+
+![Android Application Architecture](Documentation/android-application-architecture.png)
+
+This diagram illustrates the on-device application workflow, from image capture and preprocessing to disease detection, severity assessment, AI-generated explanations, multilingual translation, and result presentation.
+
 ---
 
 **KrishiMitra AI — An Offline AI-Powered Farming Assistant**
