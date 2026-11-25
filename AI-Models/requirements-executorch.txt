@@ -1,0 +1,6 @@
+torch==2.15.0+cpu
+torchvision==0.29.2+cpu
+executorch==1.5.1
+pytorch_tokenizers==1.6.0
+numpy==2.4.6
+Pillow==13.0.0
